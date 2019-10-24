@@ -47,7 +47,7 @@ class Map{
                 xy[0] = randomInt(0,_ts.col - 1);
                 xy[1] = randomInt(0,_ts.row - 1);
                 if(_ts.get(xy).value === 0){
-                    _ts.setValue(xy,type);
+                    _ts.set(xy,'value',type);
                 }else{
                     maskMap();
                 };
@@ -61,16 +61,23 @@ class Map{
      * @return {spot} 当前位置的网格点
      */
     get(xy){
-        return this.grid[xy[1]][xy[0]];
+        let row = this.grid[xy[1]];
+        return row ? row[xy[0]] : undefined;
     }
 
     /**
      * 地图设置方法
      * @param {array} xy <必填> 任意节点坐标
+     * @param {string} key <必填> 需要设置的键
      * @param {number} val <必选> 设置项目的值
      */
-    setValue(xy,val){
-        this.get(xy).value = val;
+    set(xy,key,val,target){
+        let spot = this.get(xy);
+        spot[key] = val;
+        typeof spot.render === 'function' && spot.render({
+            key:key,
+            val:val
+        });
     }
 
     /**
@@ -87,23 +94,9 @@ class Map{
                 let wResult = [];
                 for(let j=0;j<col;j++){
                     let spot = new Spot(j,i);
-                    spot.render = render;
-                    spot.render('first');
-                    spot = new Proxy(spot,{
-                        set(target,key,val){
-                            //Reflect.set(target, key, val);
-                            target[key] = val;
-                            if(key === 'value' && typeof target.render === 'function'){
-                                target.render('update');
-                            };
-                            target[key] = val;
-                            return true;
-                            // return Reflect.set(target, key, val);
-                        },
-                        get(target,key){
-                            return target[key];
-                        }
-                    });
+                    if(typeof render === 'function'){
+                        spot.render = render;
+                    };
                     wResult[j] = spot;
                 };
                 return wResult;

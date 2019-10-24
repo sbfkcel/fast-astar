@@ -12,7 +12,8 @@ class Astart{
         _ts.grid = grid;
 
         _ts.openList = {};      // 开启列表
-        _ts.closeList = {};     // 关闭列表（存放不需要再次检查的节点）          
+        _ts.closeList = {};     // 关闭列表（存放不需要再次检查的节点）
+        _ts.current;            // 保存当前正在寻找的节点       
     }
     
     /**
@@ -25,22 +26,23 @@ class Astart{
         const _ts = this;
         _ts.start = start;                                          // 记录开始点
         _ts.end = end;                                              // 记录结束点
-        _ts.grid.get(end).value = -2;
-        _ts.grid.get(start).value = -1;
-
+        _ts.grid.get(start).value = 0;
+        _ts.grid.set(start,'type','start');
+        _ts.grid.get(end).value = 0;
+        _ts.grid.set(end,'type','end');
         let result,
             eachSearch;
         
         // 将起点加入到开启列表
         _ts.openList[start] = null;
-
+        _ts.grid.set(start,'type','open');
         (eachSearch = (node)=>{
+            _ts.grid.set(node,'type','highlight');
             if(node[0] === _ts.end[0] && node[1] === _ts.end[1]){
                 result = _ts.getBackPath(node);
-                console.log('找到结束点',result);
+                // console.log('找到结束点',result);
             }else{
-                // 得到四周有用的节点
-                let aroundNode = _ts.getAround(node);
+                let aroundNode = _ts.getAround(node);               // 得到四周有用的节点
 
                 // 将四周有用的节点添加到开启列表
                 aroundNode.forEach(item => {
@@ -49,10 +51,14 @@ class Astart{
                     // 如果网格不存在开启列表，则加入到开启列表并把选中的新方格作为父节点及计算其g、f、h值
                     if(_ts.openList[item] !== null){
                         _ts.openList[item] = null;
+                        let g = _ts.g(item,node),
+                            h = _ts.h(item,_ts.end),
+                            f = g + h;
                         spot.parent = node;
-                        spot.g = _ts.g(item,node);
-                        spot.h = _ts.h(item,_ts.end);
-                        spot.f = spot.g + spot.h;
+                        spot.g = g;
+                        spot.h = h;
+                        spot.f = f;
+                        _ts.grid.set(item,'type','open');
                     }
                     // 如果已经在开启列表里了，则检查该条路径是否会更好
                     // 检查新的路径g值是否会更低，如果更低则把该相邻方格的你节点改为目前选中的方格并重新计算其g、f、h
@@ -61,18 +67,26 @@ class Astart{
                             newG = _ts.grid.get(node).g + _ts.g(item,node);
                         if(newG < oldG){
                             spot.parent = node;
-                            spot.g = newG;
+                            spot.g = g;
                             spot.f = spot.g + spot.h;
+                            _ts.grid.set(item,'type','update');
                         };
                     };
+
+                    
                 });
                 // 从开启列表中删除点A并加入到关闭列表
                 delete _ts.openList[node];
                 _ts.closeList[node] = null;
-
+                _ts.grid.set(node,'type','close');
+                _ts.current = node;
+                
+                
                 // 从开启列表中寻找最小的F值的项目，并将其加入到关闭列表
-                let min = _ts.getOpenListMin().key;
-                eachSearch(min);
+                let min = _ts.getOpenListMin();
+                if(min){
+                    eachSearch(min.key);
+                };
             };
         })(start);
         return result;
@@ -97,7 +111,7 @@ class Astart{
 
     /**
      * 获取打开列表中，f值最小的索引值的项
-     * @return {object} 返回打开列表中，f值最小的索引值
+     * @return {object|undefined} 返回打开列表中，f值最小的索引值
      */
     getOpenListMin(){
         const _ts = this;
@@ -140,21 +154,25 @@ class Astart{
                 'b':[0,1],
                 'lb':[-1,1],
                 'l':[-1,0]
+            },
+            isValid = (xy,place)=>{
+                let neighbor = grid.get(_ts.getOffsetGrid(xy,place));
+                return neighbor !== undefined && neighbor.value > 0 ? true : false;
             };
 
-        if(grid.get(_ts.getOffsetGrid(xy,obj.l)).value > 0){
+        if(isValid(xy,obj.l)){
             delete obj.lt;
             delete obj.lb;
         };
-        if(grid.get(_ts.getOffsetGrid(xy,obj.r)).value > 0){
+        if(isValid(xy,obj.r)){
             delete obj.rt;
             delete obj.rb;
         };
-        if(grid.get(_ts.getOffsetGrid(xy,obj.t)).value > 0){
+        if(isValid(xy,obj.t)){
             delete obj.lt;
             delete obj.rt;
         };
-        if(grid.get(_ts.getOffsetGrid(xy,obj.b)).value > 0){
+        if(isValid(xy,obj.b)){
             delete obj.lb;
             delete obj.rb;
         };
@@ -167,10 +185,10 @@ class Astart{
                 ],
                 isClose = _ts.closeList[_xy] === null;
             if(
-                _xy[0] > -1 && _xy[1] < grid.col &&          // 判断水平边界
-                _xy[1] > -1 && _xy[1] < grid.row &&          // 判断纵向边界
-                !isClose &&                                  // 已经关闭过的不检查
-                grid.get(_xy).value < 1                      // 判断地图无障碍物（是可移动区域）
+                _xy[0] > -1 && _xy[0] < grid.col &&                 // 判断水平边界
+                _xy[1] > -1 && _xy[1] < grid.row &&                 // 判断纵向边界
+                !isClose &&                                         // 已经关闭过的不检查
+                grid.get(_xy).value < 1                             // 判断地图无障碍物（是可移动区域）
             ){
                 result.push(_xy);
             };
