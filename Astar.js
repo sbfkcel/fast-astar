@@ -22,8 +22,9 @@ class Astart{
      * @param  {array} end <必填>，结束位置（[x,y]）
      * @return {array}  返回寻找到的路径
      */
-    search(start,end){
+    search(start,end,option){
         const _ts = this;
+        _ts.searchOption = option || {};
         _ts.start = start;                                          // 记录开始点
         _ts.end = end;                                              // 记录结束点
         _ts.grid.get(start).value = 0;
@@ -72,8 +73,6 @@ class Astart{
                             _ts.grid.set(item,'type','update');
                         };
                     };
-
-                    
                 });
                 // 从开启列表中删除点A并加入到关闭列表
                 delete _ts.openList[node];
@@ -143,7 +142,8 @@ class Astart{
      */
     getAround(xy){
         const _ts = this;
-        let result = [],
+        let searchOption = _ts.searchOption,
+            result = [],
             grid = _ts.grid,
             obj = {
                 'lt':[-1,-1],
@@ -159,7 +159,12 @@ class Astart{
                 let neighbor = grid.get(_ts.getOffsetGrid(xy,place));
                 return neighbor !== undefined && neighbor.value > 0 ? true : false;
             };
-
+        if(searchOption.rightAngle){
+            delete obj.lt;
+            delete obj.rt;
+            delete obj.rb;
+            delete obj.lb;
+        };
         if(isValid(xy,obj.l)){
             delete obj.lt;
             delete obj.lb;
@@ -214,7 +219,8 @@ class Astart{
      * @return {number} 移动成本
      */
     g(grid,parent){
-        return parent[0] === grid[0] || parent[1] === grid[1] ? 10 : 14;
+        // return parent[0] === grid[0] || parent[1] === grid[1] ? 10 : 14;
+        return (parent[0] === grid[0] || parent[1] === grid[1] ? 10 : 14) + this.grid.get(parent).g;
     }
 
     /**

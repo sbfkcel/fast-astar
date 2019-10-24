@@ -1,5 +1,4 @@
 (()=>{
-    let graphicObj = {};
     const spotSize = 56,
         col = 11,
         row = 7,
@@ -44,7 +43,7 @@
         // 绘制边框
         drawBorder = function(color,x,y){
             let grap = new PIXI.Graphics(),
-                lineSize = 8;
+                lineSize = 4;
             grap.clear();
             grap.lineStyle(lineSize,color,0.3,0);
             grap.beginFill(color,0);
@@ -129,15 +128,6 @@
             group.y = y;
             return group;
         },
-
-        strToArr = str => {
-            let result = [],
-                arr = str.split(',');
-            arr.forEach(item => {
-                result.push(+item);
-            });
-            return result;
-        },
         
         render = function(obj){
             const _ts = this;
@@ -176,7 +166,7 @@
     });
 
     // 设置地图障碍物
-    [[5,1],[5,2],[5,3],[5,4]].forEach(item => {
+    [[5,1],[5,2],[5,3],[5,4],[7,3]].forEach(item => {
         map.get(item).value = 1;
     });
 
@@ -184,16 +174,16 @@
     
     let astar = new Astart(map);
 
-    console.log('搜索到的路径',astar.search([2,3],[8,3]));
-    
+    console.log('搜索到的路径',astar.search([2,3],[8,3],{rightAngle:false}));
 
     (()=>{
         // 创建图层
         let group = {
                 text: new PIXI.display.Group(5,true),
-                path: new PIXI.display.Group(4,true),
-                highlight: new PIXI.display.Group(3,true),
-                startEnd: new PIXI.display.Group(2,true),
+                
+                startEnd: new PIXI.display.Group(4,true),
+                path: new PIXI.display.Group(3,true),
+                highlight: new PIXI.display.Group(2,true),
                 graph: new PIXI.display.Group(1,true),
                 background: new PIXI.display.Group(0,true)
             };
@@ -282,6 +272,7 @@
                                         };
                                         
                                         grap = drawText(f,g,h,x,y);
+                                        grap.parentGroup = group.text;
                                         textContainer.addChild(grap);
                                     };
                                 };
@@ -294,6 +285,7 @@
                                             graphContainer.removeChild(backObj.graph[item]);
                                         };
                                         grap = backObj.graph[item] = drawSquare(color,x,y);
+                                        grap.parentGroup = group.graph;
                                         graphContainer.addChild(grap);
                                     break;
                                     case 'highlight':
@@ -303,6 +295,7 @@
                                             highlightContainer.removeChild(backObj.highlight);
                                         };
                                         grap = backObj.highlight = drawBorder(color,x,y);
+                                        grap.parentGroup = group.highlight;
                                         highlightContainer.addChild(grap);
 
                                         // 寻找当前路径
@@ -313,10 +306,9 @@
                                                 pathContainer.removeChild(backObj.path);
                                             };
                                             grap = backObj.path = drawPath(color,path);
+                                            grap.parentGroup = group.path;
                                             pathContainer.addChild(grap);
                                         };
-                                        
-                                        
                                     break;
                                 };
                                 
