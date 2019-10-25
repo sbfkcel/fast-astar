@@ -39,6 +39,7 @@ class Astart{
         _ts.grid.set(start,'type','open');
         (eachSearch = (node)=>{
             _ts.grid.set(node,'type','highlight');
+            console.log(node);
             if(node[0] === _ts.end[0] && node[1] === _ts.end[1]){
                 result = _ts.getBackPath(node);
                 // console.log('找到结束点',result);
@@ -65,13 +66,12 @@ class Astart{
                     // 检查新的路径g值是否会更低，如果更低则把该相邻方格的你节点改为目前选中的方格并重新计算其g、f、h
                     else{
                         let oldG = spot.g,
-                            newG = _ts.grid.get(node).g + _ts.g(item,node);
+                            newG = _ts.g(item,node);
                         if(newG < oldG){
                             spot.parent = node;
-                            spot.g = g;
+                            spot.g = newG;
                             spot.f = spot.g + spot.h;
                             _ts.grid.set(item,'type','update');
-                            console.log("这是什么送苹果");
                         };
                     };
                 });
@@ -80,7 +80,6 @@ class Astart{
                 _ts.closeList[node] = null;
                 _ts.grid.set(node,'type','close');
                 _ts.current = node;
-                
                 
                 // 从开启列表中寻找最小的F值的项目，并将其加入到关闭列表
                 let min = _ts.getOpenListMin();
@@ -220,8 +219,10 @@ class Astart{
      * @return {number} 移动成本
      */
     g(grid,parent){
+        // return 0;
+
         // 不与父级权重叠加
-        return parent[0] === grid[0] || parent[1] === grid[1] ? 10 : 10;
+        // return parent[0] === grid[0] || parent[1] === grid[1] ? 10 : 10;
 
         // 与父级的权重叠加
         return (parent[0] === grid[0] || parent[1] === grid[1] ? 10 : 14) + this.grid.get(parent).g;

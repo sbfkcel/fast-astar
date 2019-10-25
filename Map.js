@@ -46,8 +46,9 @@ class Map{
             (maskMap = ()=>{
                 xy[0] = randomInt(0,_ts.col - 1);
                 xy[1] = randomInt(0,_ts.row - 1);
-                if(_ts.get(xy).value === 0){
-                    _ts.set(xy,'value',type);
+                let item = _ts.get(xy);
+                if(item.value === 0){
+                    item.value = type;
                 }else{
                     maskMap();
                 };

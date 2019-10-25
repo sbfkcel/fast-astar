@@ -174,15 +174,19 @@
 
     map.obstacle(30,1);
     
-    let astar = new Astart(map);
+    let astar = new Astart(map),
+        result = astar.search([0,0],[19,19],{rightAngle:false}),
+        text = result ? '寻找到的路径：'+result : '路线不通';
 
-    console.log('搜索到的路径',astar.search([0,0],[19,19],{rightAngle:false}));
+    document.getElementById('result').innerHTML = text;
+
 
     (()=>{
+        window.task = demoTask;
+
         // 创建图层
         let group = {
                 text: new PIXI.display.Group(5,true),
-                
                 startEnd: new PIXI.display.Group(4,true),
                 path: new PIXI.display.Group(3,true),
                 highlight: new PIXI.display.Group(2,true),
@@ -249,6 +253,7 @@
         let taskLen;
         (drawEach = index => {
             taskLen = demoTask.list.length;
+            console.log(index,taskLen);
             
             if(taskLen > index){
                 let data = demoTask.list[index],
@@ -270,10 +275,10 @@
                                     h = spot.h;
                                     if(f){
                                         if(backObj.text[item]){
-                                            textContainer.removeChild(backObj.graph[item]);
+                                            textContainer.removeChild(backObj.text[item]);
                                         };
                                         
-                                        grap = drawText(f,g,h,x,y);
+                                        grap = backObj.text[item] = drawText(f,g,h,x,y);
                                         grap.parentGroup = group.text;
                                         textContainer.addChild(grap);
                                     };
@@ -313,13 +318,12 @@
                                         };
                                     break;
                                 };
-                                
                             };
                         };
                         //console.log(index,data);
                         drawEach(++index);
                     };
-                if(index < 1000){
+                if(index < taskLen){
                     setTimeout(draw,data.time); 
                 };
                 
