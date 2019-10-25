@@ -1,8 +1,7 @@
 (()=>{
-    let graphicObj = {};
-    const spotSize = 56,
-        col = 11,
-        row = 7,
+    const spotSize = 40,
+        col = 20,
+        row = 20,
         lineW = 1,
         canvasW = (spotSize + lineW) * col + lineW,
         canvasH = (spotSize + lineW) * row + lineW,
@@ -44,7 +43,7 @@
         // 绘制边框
         drawBorder = function(color,x,y){
             let grap = new PIXI.Graphics(),
-                lineSize = 8;
+                lineSize = 4;
             grap.clear();
             grap.lineStyle(lineSize,color,0.3,0);
             grap.beginFill(color,0);
@@ -55,7 +54,7 @@
 
         // 绘制圆角路径
         drawPath = function(color,paths){
-            let lineSize = 20,
+            let lineSize = spotSize / 4,
                 radiuSize = lineSize / 2,
                 canvas = document.createElement('canvas'),
                 ctx = canvas.getContext('2d'),
@@ -106,11 +105,11 @@
             let group = new PIXI.Container(),
                 style = {
                     fontFamily:'Arial',
-                    fontSize:10,
+                    fontSize:8,
                     fill:0x000000,
                     align:'left'
                 },
-                padding = 6;
+                padding = 2;
             f = new PIXI.Text(f,style);
             g = new PIXI.Text(g,style);
             h = new PIXI.Text(h,style);
@@ -128,15 +127,6 @@
             group.x = x;
             group.y = y;
             return group;
-        },
-
-        strToArr = str => {
-            let result = [],
-                arr = str.split(',');
-            arr.forEach(item => {
-                result.push(+item);
-            });
-            return result;
         },
         
         render = function(obj){
@@ -158,7 +148,7 @@
                     case 'close':
                     case 'update':
                         itemObj[type] = [x,y];
-                        itemObj.time = 200;
+                        itemObj.time = 5;
                     break;
                 };
             };
@@ -166,6 +156,8 @@
                 demoTask.list.push(itemObj);
             };
         };
+    // app.view.style.width = canvasW / 2 + 'px';
+    // app.view.style.height = canvasH / 2 + 'px';
     document.body.appendChild(app.view);
 
     // 创建地图
@@ -176,24 +168,28 @@
     });
 
     // 设置地图障碍物
-    [[5,1],[5,2],[5,3],[5,4]].forEach(item => {
-        map.get(item).value = 1;
-    });
+    // [[19,10],[20,10],[21,10],[22,10],[19,11],[19,12],[19,13],[19,14],[20,14],[21,14],[21,12],[22,12]].forEach(item => {
+    //     map.get(item).value = 1;
+    // });
 
-    // map.obstacle(40,1);
+    map.obstacle(30,1);
     
-    let astar = new Astart(map);
+    let astar = new Astart(map),
+        result = astar.search([0,0],[19,19],{rightAngle:false}),
+        text = result ? '寻找到的路径：'+result : '路线不通';
 
-    console.log('搜索到的路径',astar.search([2,3],[8,3]));
-    
+    document.getElementById('result').innerHTML = text;
+
 
     (()=>{
+        window.task = demoTask;
+
         // 创建图层
         let group = {
                 text: new PIXI.display.Group(5,true),
-                path: new PIXI.display.Group(4,true),
-                highlight: new PIXI.display.Group(3,true),
-                startEnd: new PIXI.display.Group(2,true),
+                startEnd: new PIXI.display.Group(4,true),
+                path: new PIXI.display.Group(3,true),
+                highlight: new PIXI.display.Group(2,true),
                 graph: new PIXI.display.Group(1,true),
                 background: new PIXI.display.Group(0,true)
             };
@@ -257,6 +253,7 @@
         let taskLen;
         (drawEach = index => {
             taskLen = demoTask.list.length;
+            console.log(index,taskLen);
             
             if(taskLen > index){
                 let data = demoTask.list[index],
@@ -278,10 +275,11 @@
                                     h = spot.h;
                                     if(f){
                                         if(backObj.text[item]){
-                                            textContainer.removeChild(backObj.graph[item]);
+                                            textContainer.removeChild(backObj.text[item]);
                                         };
                                         
-                                        grap = drawText(f,g,h,x,y);
+                                        grap = backObj.text[item] = drawText(f,g,h,x,y);
+                                        grap.parentGroup = group.text;
                                         textContainer.addChild(grap);
                                     };
                                 };
@@ -294,6 +292,7 @@
                                             graphContainer.removeChild(backObj.graph[item]);
                                         };
                                         grap = backObj.graph[item] = drawSquare(color,x,y);
+                                        grap.parentGroup = group.graph;
                                         graphContainer.addChild(grap);
                                     break;
                                     case 'highlight':
@@ -303,6 +302,7 @@
                                             highlightContainer.removeChild(backObj.highlight);
                                         };
                                         grap = backObj.highlight = drawBorder(color,x,y);
+                                        grap.parentGroup = group.highlight;
                                         highlightContainer.addChild(grap);
 
                                         // 寻找当前路径
@@ -313,19 +313,17 @@
                                                 pathContainer.removeChild(backObj.path);
                                             };
                                             grap = backObj.path = drawPath(color,path);
+                                            grap.parentGroup = group.path;
                                             pathContainer.addChild(grap);
                                         };
-                                        
-                                        
                                     break;
                                 };
-                                
                             };
                         };
                         //console.log(index,data);
                         drawEach(++index);
                     };
-                if(index < 1000){
+                if(index < taskLen){
                     setTimeout(draw,data.time); 
                 };
                 
