@@ -71,6 +71,7 @@ class Astart{
                             spot.g = g;
                             spot.f = spot.g + spot.h;
                             _ts.grid.set(item,'type','update');
+                            console.log("这是什么送苹果");
                         };
                     };
                 });
@@ -219,7 +220,10 @@ class Astart{
      * @return {number} 移动成本
      */
     g(grid,parent){
-        // return parent[0] === grid[0] || parent[1] === grid[1] ? 10 : 14;
+        // 不与父级权重叠加
+        return parent[0] === grid[0] || parent[1] === grid[1] ? 10 : 10;
+
+        // 与父级的权重叠加
         return (parent[0] === grid[0] || parent[1] === grid[1] ? 10 : 14) + this.grid.get(parent).g;
     }
 

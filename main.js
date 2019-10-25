@@ -1,7 +1,7 @@
 (()=>{
-    const spotSize = 56,
-        col = 11,
-        row = 7,
+    const spotSize = 40,
+        col = 20,
+        row = 20,
         lineW = 1,
         canvasW = (spotSize + lineW) * col + lineW,
         canvasH = (spotSize + lineW) * row + lineW,
@@ -54,7 +54,7 @@
 
         // 绘制圆角路径
         drawPath = function(color,paths){
-            let lineSize = 20,
+            let lineSize = spotSize / 4,
                 radiuSize = lineSize / 2,
                 canvas = document.createElement('canvas'),
                 ctx = canvas.getContext('2d'),
@@ -105,11 +105,11 @@
             let group = new PIXI.Container(),
                 style = {
                     fontFamily:'Arial',
-                    fontSize:10,
+                    fontSize:8,
                     fill:0x000000,
                     align:'left'
                 },
-                padding = 6;
+                padding = 2;
             f = new PIXI.Text(f,style);
             g = new PIXI.Text(g,style);
             h = new PIXI.Text(h,style);
@@ -148,7 +148,7 @@
                     case 'close':
                     case 'update':
                         itemObj[type] = [x,y];
-                        itemObj.time = 200;
+                        itemObj.time = 5;
                     break;
                 };
             };
@@ -156,6 +156,8 @@
                 demoTask.list.push(itemObj);
             };
         };
+    // app.view.style.width = canvasW / 2 + 'px';
+    // app.view.style.height = canvasH / 2 + 'px';
     document.body.appendChild(app.view);
 
     // 创建地图
@@ -166,15 +168,15 @@
     });
 
     // 设置地图障碍物
-    [[5,1],[5,2],[5,3],[5,4],[7,3]].forEach(item => {
-        map.get(item).value = 1;
-    });
+    // [[19,10],[20,10],[21,10],[22,10],[19,11],[19,12],[19,13],[19,14],[20,14],[21,14],[21,12],[22,12]].forEach(item => {
+    //     map.get(item).value = 1;
+    // });
 
-    // map.obstacle(40,1);
+    map.obstacle(30,1);
     
     let astar = new Astart(map);
 
-    console.log('搜索到的路径',astar.search([2,3],[8,3],{rightAngle:false}));
+    console.log('搜索到的路径',astar.search([0,0],[19,19],{rightAngle:false}));
 
     (()=>{
         // 创建图层
