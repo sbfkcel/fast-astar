@@ -1,4 +1,4 @@
-const obj = require('./index'),
+const obj = require('fast-astar'),
     Grid = obj.Grid,
     Astar = obj.Astar;
 
@@ -7,7 +7,7 @@ let grid = new Grid({
         col:11,                  // col
         row:7,                   // row
         render:function(){       // Optional, this method is triggered when the grid point changes
-            console.log(this);
+            // console.log(this);
         }
     });
 
