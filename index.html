@@ -17,6 +17,7 @@
 	.main {width:1002px; margin:0 auto; padding:24px 0 88px 0;}
 	.app {width:1002px; height:602px;}
 	.result {height:20px; line-height:20px; font-size:14px; color:#666; padding:10px; margin-bottom:48px; border:1px #ccc dashed; box-shadow:0 10px 10px rgba(0,0,0,0.08); white-space:nowrap; overflow-x:auto;}
+	.result::-webkit-scrollbar {display:none;}
 	.result::before {content:"😊"; font-size:24px; float:left; margin-right:6px;}
 	.result--notResult::before {content:"😞";}
 	.app {margin-bottom:20px;}
@@ -38,7 +39,7 @@
 		<div class="app" id="app"></div>
 		<div class="result" id="result"></div>
 		<h2>About</h2>
-		<p>fast-astar is an implementation of a* algorithm using javascript. Small and fast.</p>
+		<p>Fast-astar is an implementation of a* algorithm using javascript. Small and fast.</p>
 		<h2>Use</h2>
 		<p>Install fast-astar using npm or introduce Grid.js and Astar.js on the page</p>
 		<pre>
@@ -113,7 +114,7 @@ console.log('Result',path);      // [[2,3],[3,2],[4,1],[5,1],[6,1],[7,2],[8,3]]
 			</select>
 		</li>
 		<li>
-			<label for="rightAngle">Rightt Angle</label>
+			<label for="rightAngle">Right Angle</label>
 			<select name="rightAngle" id="rightAngle">
 				<option value="0">false</option>
 				<option value="1">true</option>
