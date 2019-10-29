@@ -5,9 +5,7 @@
 * @param {number} <必选> max 最大数
 * @return {number} 返回范围内的整数
 */
-function randomInt (min,max){
-    return ~~(Math.random() * (max - min + 1)) + min;
-};
+const randomInt = (min,max) => ~~(Math.random() * (max - min + 1)) + min;
 
 // 网格节点
 const Spot = function(x,y){
@@ -19,12 +17,10 @@ const Spot = function(x,y){
     _ts.f = 0;
     _ts.value = 0;
     _ts.key = [x,y];
-    _ts.render = function(){
-        console.log('网格渲染');
-    };
+    // _ts.render = function(){console.log('网格渲染');};
 };
 
-class Map{
+class Grid{
     constructor(obj){
         const _ts = this;
         _ts.col = obj.col;      // 列，即宽
@@ -41,19 +37,23 @@ class Map{
         const _ts = this;
         let amount = ~~(_ts.col * _ts.row * scale / 100),
             xy = [],
-            maskMap;
+            maskMap,
+            result = {};
         for(let i=0; i<amount; i++){
             (maskMap = ()=>{
                 xy[0] = randomInt(0,_ts.col - 1);
                 xy[1] = randomInt(0,_ts.row - 1);
+                
                 let item = _ts.get(xy);
                 if(item.value === 0){
                     item.value = type;
+                    result[[xy[0],xy[1]]] = null;
                 }else{
                     maskMap();
                 };
             })()
         };
+        return result;
     }
 
     /**
@@ -72,7 +72,7 @@ class Map{
      * @param {string} key <必填> 需要设置的键
      * @param {number} val <必选> 设置项目的值
      */
-    set(xy,key,val,target){
+    set(xy,key,val){
         let spot = this.get(xy);
         spot[key] = val;
         typeof spot.render === 'function' && spot.render({
@@ -124,3 +124,4 @@ class Map{
         return result;
     }
 }
+export default Grid;

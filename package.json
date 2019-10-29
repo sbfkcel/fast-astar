@@ -1,0 +1,28 @@
+{
+  "name": "fast-astar",
+  "version": "1.0.0",
+  "description": "fast-astar is an implementation of a* algorithm using javascript. Small and fast.",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sbfkcel/fast-astar.git"
+  },
+  "keywords": [
+    "astar",
+    "a-star",
+  	"a*",
+    "algorithm",
+    "graph",
+    "traversal",
+    "path search"
+  ],
+  "author": "sbfkcel@163.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sbfkcel/fast-astar/issues"
+  },
+  "homepage": "https://github.com/sbfkcel/fast-astar#readme"
+}
