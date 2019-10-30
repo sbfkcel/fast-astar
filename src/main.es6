@@ -1,10 +1,11 @@
 const $id = id => document.getElementById(id),
-    strToArray = str => str.split(',').map(Number);
+    strToArray = str => str.split(',').map(Number),
+    devicePixelRatio = window.devicePixelRatio > 1 ? 2 : 1;
 class Demo{
     constructor(){
         const _ts = this;
         _ts.option = {          // 保存相关选项
-            lineSize:4,
+            lineSize:2 * devicePixelRatio,
         };
         _ts.taskData = {        // 任务数据
             // '40,24':{
@@ -68,9 +69,9 @@ class Demo{
 
                         // 设置网格大小
                         if(arrVal[0] === 40){
-                            spotSize = option['spotSize'] = 48;
+                            spotSize = option['spotSize'] = 24 * devicePixelRatio;
                         }else{
-                            spotSize = option['spotSize'] = 96;
+                            spotSize = option['spotSize'] = 48 * devicePixelRatio;
                         };
 
                         // 设置画面宽高
@@ -523,7 +524,7 @@ class Demo{
         let group = new PIXI.Container(),
             style = {
                 fontFamily:'Arial',
-                fontSize:16,
+                fontSize:8 * devicePixelRatio,
                 fill:0x000000,
                 align:'left'
             },
@@ -546,8 +547,6 @@ class Demo{
         group.y = y;
         return group;
     }
-
-
 }
 let demo = new Demo();
 demo.init();
