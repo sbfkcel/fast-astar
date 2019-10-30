@@ -134,7 +134,7 @@ class Demo{
             height:option.canvasH,
             antialias:true,
             backgroundColor:0xDDDDDD,
-            // forceCanvas:true
+            forceCanvas:true
         });
         _ts.app.view.style.width = '1002px';
         _ts.app.view.style.height = '602px';
