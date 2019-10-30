@@ -46,22 +46,20 @@
 		<pre>
 			<code class="bash">
 # install
-npm install astar.js
+npm install fast-astar --save
 			</code>
 		</pre>
 		<strong>Code:</strong>
 		<pre>
 			<code class="javascript">
-const obj = require('./index'),
-	Grid = obj.Grid,
-	Astar = obj.Astar;
+import {Grid,Astar} from "fast-astar";
 
 // Create a grid
 let grid = new Grid({
 		col:11,                  // col
 		row:7,                   // row
 		render:function(){       // Optional, this method is triggered when the grid point changes
-			console.log(this);
+			// console.log(this);
 		}
 	});
 
@@ -151,10 +149,10 @@ console.log('Result',path);      // [[2,3],[3,2],[4,1],[5,1],[6,1],[7,2],[8,3]]
 	
 	<script src="https://cdn.staticfile.org/highlight.js/9.15.10/highlight.min.js"></script>
 	<script>hljs.initHighlightingOnLoad();</script>
-	<script src="./dist/pixi.js"></script>
-	<script src="./dist/pixi-layers.js"></script>
-	<script src="./dist/Grid.js"></script>
-	<script src="./dist/Astar.js"></script>
-	<script src="./dist/main.js"></script>
+	<script src="./pixi.js"></script>
+	<script src="./pixi-layers.js"></script>
+	<script src="./Grid.js"></script>
+	<script src="./Astar.js"></script>
+	<script src="./main.js"></script>
 </body>
 </html>

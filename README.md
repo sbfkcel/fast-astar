@@ -5,17 +5,21 @@ fast-astar is an implementation of a* algorithm using javascript. Small and fast
 # Use
 Install fast-astar using npm or introduce Grid.js and Astar.js on the page
 
+**Install:**
+```bash
+npm install fast-astar --save
+```
+
+**Install:**
 ```javascript
-const obj = require('./index'),
-    Grid = obj.Grid,
-    Astar = obj.Astar;
+import {Grid,Astar} from "fast-astar";
 
 // Create a grid
 let grid = new Grid({
         col:11,                  // col
         row:7,                   // row
         render:function(){       // Optional, this method is triggered when the grid point changes
-            console.log(this);
+            // console.log(this);
         }
     });
 
@@ -40,7 +44,7 @@ console.log('Result',path);      // [[2,3],[3,2],[4,1],[5,1],[6,1],[7,2],[8,3]]
 
 
 # Demo
-- []
+- [https://sbfkcel.github.io/fast-astar](https://sbfkcel.github.io/fast-astar)
 
 # Related
 - [wiki](http://wikipedia.moesalih.com/A*_search_algorithm)

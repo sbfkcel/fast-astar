@@ -120,7 +120,6 @@ class Demo{
                 };
             };
         };
-
     }
 
     // 创建应用
@@ -134,7 +133,8 @@ class Demo{
             width:option.canvasW,
             height:option.canvasH,
             antialias:true,
-            backgroundColor:0xDDDDDD
+            backgroundColor:0xDDDDDD,
+            // forceCanvas:true
         });
         _ts.app.view.style.width = '1002px';
         _ts.app.view.style.height = '602px';
