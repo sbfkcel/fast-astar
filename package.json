@@ -1,6 +1,6 @@
 {
   "name": "fast-astar",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "description": "fast-astar is an implementation of a* algorithm using javascript. Small and fast.",
   "main": "dist/index.js",
   "scripts": {
