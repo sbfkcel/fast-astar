@@ -129,12 +129,12 @@ class Demo{
         if(_ts.app){
             _ts.domBox.removeChild(_ts.app.view);
         };
-        _ts.app = new PIXI.Application({
+        window.app = _ts.app = new PIXI.Application({
             width:option.canvasW,
             height:option.canvasH,
             antialias:true,
             backgroundColor:0xDDDDDD,
-            forceCanvas:true
+            forceCanvas:false
         });
         _ts.app.view.style.width = '1002px';
         _ts.app.view.style.height = '602px';
@@ -262,6 +262,14 @@ class Demo{
         // 删除所有绘图
         for(let key in container){
             let itemContainer = container[key];
+            // itemContainer.children.forEach(item => {
+            //     item.destroy({
+            //         children:true,
+            //         texture:true,
+            //         baseTexture:true
+            //     });
+            // });
+
             itemContainer.removeChildren(0,itemContainer.children.length);
         };
     }
@@ -339,7 +347,8 @@ class Demo{
             container = _ts.pixiContainer,
             group = _ts.pixiGroup;
         let taskLen,
-            drawEach;
+            drawEach,
+            destroyOption = {children:true,texture:true,baseTexture:true};
         (drawEach = index => {
             taskLen = task.length;
             if(taskLen > index){
@@ -362,6 +371,7 @@ class Demo{
                                     h = spot.h;
                                     if(f){
                                         if(backObj.text[item]){
+                                            backObj.text[item].destroy(destroyOption);
                                             container.text.removeChild(backObj.text[item]);
                                         };
                                         
@@ -376,6 +386,7 @@ class Demo{
                                         color = key === 'open' ? 0xD4FFE0 : 0x00EDB6;
                                         // 删除旧的网络绘图
                                         if(backObj.graph[item]){
+                                            backObj.graph[item].destroy(destroyOption);
                                             container.graph.removeChild(backObj.graph[item]);
                                         };
                                         grap = backObj.graph[item] = _ts._drawSquare(color,x,y);
@@ -386,6 +397,7 @@ class Demo{
                                         // 高亮当前的格子
                                         color = 0x000000;
                                         if(backObj.highlight){
+                                            backObj.highlight.destroy(destroyOption);
                                             container.highlight.removeChild(backObj.highlight);
                                         };
                                         grap = backObj.highlight = _ts._drawBorder(color,x,y);
@@ -397,6 +409,7 @@ class Demo{
                                         if(path.length > 1){
                                             color = 0xFFFF00;
                                             if(backObj.path){
+                                                backObj.path.destroy(destroyOption);
                                                 container.path.removeChild(backObj.path);
                                             };
                                             grap = backObj.path = _ts._drawPath(color,path);
@@ -472,7 +485,6 @@ class Demo{
             lineSize = option.lineSize,
             canvasW = option.canvasW,
             canvasH = option.canvasH;
-
         let pathSize = spotSize / 4,
             radiuSize = pathSize / 2,
             canvas = document.createElement('canvas'),
@@ -511,7 +523,6 @@ class Demo{
             new PIXI.Rectangle(0,0,canvasW,canvasH)
         ));
         sprite.alpha = 0.8;
-
         return sprite;
     }
 
