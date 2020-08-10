@@ -10,7 +10,7 @@ Install fast-astar using npm or introduce Grid.js and Astar.js on the page
 npm install fast-astar --save
 ```
 
-**Install:**
+**Use:**
 ```javascript
 import {Grid,Astar} from "fast-astar";
 
