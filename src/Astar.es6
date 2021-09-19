@@ -2,10 +2,10 @@ const strToArr = str => str.split(',').map(Number);
 class Astar{
     constructor(grid){
         const _ts = this;
-        _ts.grid = grid;        // 保存传入地图网格
-        _ts.openList = {};      // 开启列表
-        _ts.closeList = {};     // 关闭列表（存放不需要再次检查的节点）
-        _ts.current;            // 保存当前正在寻找的节点       
+        _ts.grid = grid;                                                                            // 保存传入地图网格
+        _ts.openList = new Map();                                                                   // 开启列表
+        _ts.closeList = new Map();                                                                  // 关闭列表（存放不需要再次检查的节点）
+        _ts.current;                                                                                // 保存当前正在寻找的节点       
     }
     
     /**
@@ -19,7 +19,8 @@ class Astar{
             defaultOption = {
                 rightAngle:false,
                 optimalResult:true
-            };
+            },
+            startKey = start.toString();
         
         option = _ts.searchOption = option || {};
         
@@ -29,18 +30,18 @@ class Astar{
             };
         };
 
-        _ts.start = start;                                          // 记录开始点
-        _ts.end = end;                                              // 记录结束点
+        _ts.start = start;                                                                          // 记录开始点
+        _ts.end = end;                                                                              // 记录结束点
         _ts.grid.get(start).value = 0;
         _ts.grid.set(start,'type','start');
         _ts.grid.get(end).value = 0;
         _ts.grid.set(end,'type','end');
         
         // 将起点加入到开启列表
-        _ts.openList[start] = null;
+        _ts.openList.set(startKey,null);
         _ts.grid.set(start,'type','open');
         let result,
-            isContinue = true,                                      // 标记是否继续查找节点
+            isContinue = true,                                                                      // 标记是否继续查找节点
             searchFn;
 
         // 定义搜索方法并从起点开始寻找
@@ -52,16 +53,17 @@ class Astar{
                 result = _ts.getBackPath(node);
                 // console.log('找到结束点',result);
             }else{
-                let aroundNode = _ts.getAround(node);               // 得到四周有用的节点
+                let aroundNode = _ts.getAround(node);                                               // 得到四周有用的节点
 
                 // 将四周有用的节点添加到开启列表
                 for(let i=0,len=aroundNode.length; i<len; i++){
                     let item = aroundNode[i],
+                        itemKey = item.toString(),
                         spot = _ts.grid.get(item);
 
                     // 如果网格不存在开启列表，则加入到开启列表并把选中的新方格作为父节点及计算其g、f、h值
-                    if(_ts.openList[item] !== null){
-                        _ts.openList[item] = null;
+                    if(_ts.openList.get(itemKey) !== null){
+                        _ts.openList.set(itemKey,null);
                         spot.parent = node;
                         spot.g = _ts.g(item,node);
                         spot.h = _ts.h(item,_ts.end);
@@ -82,8 +84,9 @@ class Astar{
                     };
                 };
                 // 从开启列表中删除点A并加入到关闭列表
-                delete _ts.openList[node];
-                _ts.closeList[node] = null;
+                let nodeKey = node.toString();
+                _ts.openList.delete(nodeKey);
+                _ts.closeList.set(nodeKey,null);
                 _ts.grid.set(node,'type','close');
             }
         })(start);
@@ -104,14 +107,15 @@ class Astar{
     getBackPath(xy){
         const _ts = this;
         let result = [xy],
-            eachBack;
-        (eachBack = xy => {
-            let gridParent = _ts.grid.get(xy).parent;
-            if(gridParent){
-                result.unshift(gridParent);
-                eachBack(gridParent);
+            isLoop = true;
+        while(isLoop){
+            xy = _ts.grid.get(xy).parent;
+            if(xy){
+                result.unshift(xy);
+            }else{
+                isLoop = false;
             };
-        })(xy);
+        };
         return result;
     }
 
@@ -122,8 +126,8 @@ class Astar{
     getOpenListMin(){
         const _ts = this;
         let data;
-        for(let key in _ts.openList){
-            let item = strToArr(key),
+        for(let map of _ts.openList){
+            let item = strToArr(map[0]),
                 itemData = _ts.grid.get(item);
             if(data === undefined || itemData.f < data.f){
                 data = _ts.grid.get(item);
@@ -154,61 +158,57 @@ class Astar{
         let searchOption = _ts.searchOption,
             result = [],
             grid = _ts.grid,
-            obj = {
-                'lt':[-1,-1],
-                't':[0,-1],
-                'rt':[1,-1],
-                'r':[1,0],
-                'rb':[1,1],
-                'b':[0,1],
-                'lb':[-1,1],
-                'l':[-1,0]
-            },
-            isValid = (xy,place)=>{
+            
+            lt = [-1,-1],
+            t = [0,-1],
+            rt = [1,-1],
+            r = [1,0],
+            rb = [1,1],
+            b = [0,1],
+            lb = [-1,1],
+            l = [-1,0],
+            around = [],
+            isNoObstacle = (xy,place)=>{
                 let neighbor = grid.get(_ts.getOffsetGrid(xy,place));
-                return neighbor !== undefined && neighbor.value > 0 ? true : false;
+                return neighbor !== undefined && neighbor.value === 0 ? true : false;
             };
-        // 如果是直角则删除交叉格式忽略
-        if(searchOption.rightAngle){
-            delete obj.lt;
-            delete obj.rt;
-            delete obj.rb;
-            delete obj.lb;
-        }else{
-            // 如果左边有障碍物，则左上、左下忽略
-            if(isValid(xy,obj.l)){
-                delete obj.lt;
-                delete obj.lb;
+        around.push(t);
+        around.push(r);
+        around.push(b);
+        around.push(l);
+        // 如果是可以斜角（非直角）则需要将交叉格子添加到四周检测列表中
+        if(!searchOption.rightAngle){
+            let l_isNoObstacle = isNoObstacle(xy,l),                                                // 左边无障碍物
+                r_isNoObstacle = isNoObstacle(xy,r),                                                // 右边无障碍物
+                t_isNoObstacle = isNoObstacle(xy,t),                                                // 上方无障碍物
+                b_isNoObstacle = isNoObstacle(xy,b);                                                // 下方无障碍物
+            if(l_isNoObstacle || t_isNoObstacle){                                                   // 左、上无障碍物，则将左上角格子加入到四周检查列表中
+                around.push(lt);
             };
-            // 如果右边有障碍物，则右上、右下忽略
-            if(isValid(xy,obj.r)){
-                delete obj.rt;
-                delete obj.rb;
+            if(l_isNoObstacle || b_isNoObstacle){                                                   // 左、下无障碍物，则将左下角格子加入到四周检查列表中
+                around.push(lb);
             };
-            // 如果顶上有障碍物，则左上，右则忽略
-            if(isValid(xy,obj.t)){
-                delete obj.lt;
-                delete obj.rt;
+            if(r_isNoObstacle || t_isNoObstacle){                                                   // 右、上无障碍物，则将右上角格子加入到四周检查列表中
+                around.push(rt);
             };
-            // 如果底部有障碍物，则左下，右下忽略
-            if(isValid(xy,obj.b)){
-                delete obj.lb;
-                delete obj.rb;
+            if(r_isNoObstacle || b_isNoObstacle){                                                   // 右、下无障碍物，则将右下角格子加入到四周检查列表中
+                around.push(rb);
             };
         };
         
-        for(let key in obj){
-            let item = obj[key],
+        for(let i=0,len=around.length; i<len; i++){
+            let item = around[i],
                 _xy = [
                     xy[0] + item[0],
                     xy[1] + item[1]
                 ],
-                isClose = _ts.closeList[_xy] === null;
+                _xyKey = _xy.toString(),
+                isClose = _ts.closeList.get(_xyKey) === null;
             if(
-                _xy[0] > -1 && _xy[0] < grid.col &&                 // 判断水平边界
-                _xy[1] > -1 && _xy[1] < grid.row &&                 // 判断纵向边界
-                !isClose &&                                         // 已经关闭过的不检查
-                grid.get(_xy).value < 1                             // 判断地图无障碍物（是可移动区域）
+                _xy[0] > -1 && _xy[0] < grid.col &&                                                 // 判断水平边界
+                _xy[1] > -1 && _xy[1] < grid.row &&                                                 // 判断纵向边界
+                !isClose &&                                                                         // 已经关闭过的不检查
+                grid.get(_xy).value < 1                                                             // 判断地图无障碍物（是可移动区域）
             ){
                 result.push(_xy);
             };
@@ -247,3 +247,5 @@ class Astar{
     }
 };
 export default Astar;
+
+// module.exports = Astar;
