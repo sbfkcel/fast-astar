@@ -35,15 +35,20 @@ class Astar{
         _ts.grid.set(start,'type','start');
         _ts.grid.get(end).value = 0;
         _ts.grid.set(end,'type','end');
-        let result,eachSearch;
         
         // 将起点加入到开启列表
         _ts.openList[start] = null;
         _ts.grid.set(start,'type','open');
-        (eachSearch = (node)=>{
+        let result,
+            isContinue = true,                                      // 标记是否继续查找节点
+            searchFn;
+
+        // 定义搜索方法并从起点开始寻找
+        (searchFn = node => {
             _ts.grid.set(node,'type','highlight');
             // 如果当前节点即结束节点，则说明找到终点
             if(_ts.grid.get(node) === _ts.grid.get(_ts.end)){
+                isContinue = false;
                 result = _ts.getBackPath(node);
                 // console.log('找到结束点',result);
             }else{
@@ -80,14 +85,19 @@ class Astar{
                 delete _ts.openList[node];
                 _ts.closeList[node] = null;
                 _ts.grid.set(node,'type','close');
-                
-                // 从开启列表中寻找最小的F值的项目，并将其加入到关闭列表
-                let minItem = _ts.getOpenListMin();
-                if(minItem){
-                    eachSearch(minItem.key);
-                };
-            };
+            }
         })(start);
+
+        // 如果未找到终点则寻找最小的F值项并继续寻找
+        while(isContinue){
+            // 从开启列表中寻找最小的F值的项，并将其加入到关闭列表
+            let minItem = _ts.getOpenListMin();
+            if(minItem){
+                searchFn(minItem.key);
+            }else{
+                isContinue = false;
+            };
+        };
         return result;
     }
 
