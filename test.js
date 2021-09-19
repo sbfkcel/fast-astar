@@ -1,4 +1,4 @@
-const obj = require('./dist/index'),
+const obj = require('./src/index'),
     Grid = obj.Grid,
     Astar = obj.Astar;
 
