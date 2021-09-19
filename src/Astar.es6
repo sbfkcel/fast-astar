@@ -126,13 +126,13 @@ class Astar{
     getOpenListMin(){
         const _ts = this;
         let data;
-        for(let map of _ts.openList){
-            let item = strToArr(map[0]),
+        _ts.openList.forEach((value,key)=>{
+            let item = strToArr(key),
                 itemData = _ts.grid.get(item);
             if(data === undefined || itemData.f < data.f){
                 data = _ts.grid.get(item);
             };
-        };
+        });
         return data;
     }
 
@@ -203,11 +203,11 @@ class Astar{
                     xy[1] + item[1]
                 ],
                 _xyKey = _xy.toString(),
-                isClose = _ts.closeList.get(_xyKey) === null;
+                isNotClose = _ts.closeList.get(_xyKey) !== null;
             if(
                 _xy[0] > -1 && _xy[0] < grid.col &&                                                 // 判断水平边界
                 _xy[1] > -1 && _xy[1] < grid.row &&                                                 // 判断纵向边界
-                !isClose &&                                                                         // 已经关闭过的不检查
+                isNotClose &&                                                                       // 已经关闭过的不检查
                 grid.get(_xy).value < 1                                                             // 判断地图无障碍物（是可移动区域）
             ){
                 result.push(_xy);
