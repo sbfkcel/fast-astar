@@ -132,7 +132,7 @@ class Demo{
         window.app = _ts.app = new PIXI.Application({
             width:option.canvasW,
             height:option.canvasH,
-            antialias:true,
+            antialias:false,
             backgroundColor:0xDDDDDD,
             forceCanvas:false
         });

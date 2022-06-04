@@ -1,6 +1,6 @@
 /*!
- * pixi.js - v5.3.11
- * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+ * pixi.js - v5.3.12
+ * Compiled Wed, 23 Mar 2022 18:38:07 UTC
  *
  * pixi.js is licensed under the MIT License.
  * http://www.opensource.org/licenses/mit-license
@@ -471,8 +471,8 @@ var PIXI = (function (exports) {
 	};
 
 	/*!
-	 * @pixi/polyfill - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/polyfill - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/polyfill is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -707,8 +707,8 @@ var PIXI = (function (exports) {
 	}
 
 	/*!
-	 * @pixi/settings - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/settings - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/settings is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -3463,8 +3463,8 @@ var PIXI = (function (exports) {
 	};
 
 	/*!
-	 * @pixi/constants - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/constants - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/constants is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -3903,8 +3903,8 @@ var PIXI = (function (exports) {
 	})(exports.MSAA_QUALITY || (exports.MSAA_QUALITY = {}));
 
 	/*!
-	 * @pixi/utils - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/utils - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/utils is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -3935,7 +3935,7 @@ var PIXI = (function (exports) {
 	settings.FAIL_IF_MAJOR_PERFORMANCE_CAVEAT = true;
 
 	var saidHello = false;
-	var VERSION = '5.3.11';
+	var VERSION = '5.3.12';
 	/**
 	 * Skips the hello message of renderers that are created after this is run.
 	 *
@@ -4804,8 +4804,8 @@ var PIXI = (function (exports) {
 	});
 
 	/*!
-	 * @pixi/math - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/math - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/math is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -6243,7 +6243,7 @@ var PIXI = (function (exports) {
 	    /**
 	     * | Rotation | Direction |
 	     * |----------|-----------|
-	     * | 0°       | East      |
+	     * | 0Â°       | East      |
 	     *
 	     * @memberof PIXI.groupD8
 	     * @constant {PIXI.GD8Symmetry}
@@ -6252,7 +6252,7 @@ var PIXI = (function (exports) {
 	    /**
 	     * | Rotation | Direction |
 	     * |----------|-----------|
-	     * | 45°↻     | Southeast |
+	     * | 45Â°â†»     | Southeast |
 	     *
 	     * @memberof PIXI.groupD8
 	     * @constant {PIXI.GD8Symmetry}
@@ -6261,7 +6261,7 @@ var PIXI = (function (exports) {
 	    /**
 	     * | Rotation | Direction |
 	     * |----------|-----------|
-	     * | 90°↻     | South     |
+	     * | 90Â°â†»     | South     |
 	     *
 	     * @memberof PIXI.groupD8
 	     * @constant {PIXI.GD8Symmetry}
@@ -6270,7 +6270,7 @@ var PIXI = (function (exports) {
 	    /**
 	     * | Rotation | Direction |
 	     * |----------|-----------|
-	     * | 135°↻    | Southwest |
+	     * | 135Â°â†»    | Southwest |
 	     *
 	     * @memberof PIXI.groupD8
 	     * @constant {PIXI.GD8Symmetry}
@@ -6279,7 +6279,7 @@ var PIXI = (function (exports) {
 	    /**
 	     * | Rotation | Direction |
 	     * |----------|-----------|
-	     * | 180°     | West      |
+	     * | 180Â°     | West      |
 	     *
 	     * @memberof PIXI.groupD8
 	     * @constant {PIXI.GD8Symmetry}
@@ -6288,7 +6288,7 @@ var PIXI = (function (exports) {
 	    /**
 	     * | Rotation    | Direction    |
 	     * |-------------|--------------|
-	     * | -135°/225°↻ | Northwest    |
+	     * | -135Â°/225Â°â†» | Northwest    |
 	     *
 	     * @memberof PIXI.groupD8
 	     * @constant {PIXI.GD8Symmetry}
@@ -6297,7 +6297,7 @@ var PIXI = (function (exports) {
 	    /**
 	     * | Rotation    | Direction    |
 	     * |-------------|--------------|
-	     * | -90°/270°↻  | North        |
+	     * | -90Â°/270Â°â†»  | North        |
 	     *
 	     * @memberof PIXI.groupD8
 	     * @constant {PIXI.GD8Symmetry}
@@ -6306,7 +6306,7 @@ var PIXI = (function (exports) {
 	    /**
 	     * | Rotation    | Direction    |
 	     * |-------------|--------------|
-	     * | -45°/315°↻  | Northeast    |
+	     * | -45Â°/315Â°â†»  | Northeast    |
 	     *
 	     * @memberof PIXI.groupD8
 	     * @constant {PIXI.GD8Symmetry}
@@ -6713,8 +6713,8 @@ var PIXI = (function (exports) {
 	}());
 
 	/*!
-	 * @pixi/display - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/display - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/display is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -8380,8 +8380,8 @@ var PIXI = (function (exports) {
 	Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
 	/*!
-	 * @pixi/accessibility - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/accessibility - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/accessibility is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -8964,8 +8964,8 @@ var PIXI = (function (exports) {
 	}());
 
 	/*!
-	 * @pixi/ticker - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/ticker - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/ticker is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -9212,7 +9212,7 @@ var PIXI = (function (exports) {
 	         * and is scaled with {@link PIXI.Ticker#speed}.
 	         * **Note:** The cap may be exceeded by scaling.
 	         * If the platform supports DOMHighResTimeStamp,
-	         * this value will have a precision of 1 µs.
+	         * this value will have a precision of 1 Âµs.
 	         * Defaults to target frame time
 	         *
 	         * @member {number}
@@ -9224,7 +9224,7 @@ var PIXI = (function (exports) {
 	         * Opposed to what the scalar {@link PIXI.Ticker#deltaTime}
 	         * is based, this value is neither capped nor scaled.
 	         * If the platform supports DOMHighResTimeStamp,
-	         * this value will have a precision of 1 µs.
+	         * this value will have a precision of 1 Âµs.
 	         * Defaults to target frame time
 	         *
 	         * @member {number}
@@ -9236,7 +9236,7 @@ var PIXI = (function (exports) {
 	         * This value is also reset internally outside of invoking
 	         * update, but only when a new animation frame is requested.
 	         * If the platform supports DOMHighResTimeStamp,
-	         * this value will have a precision of 1 µs.
+	         * this value will have a precision of 1 Âµs.
 	         *
 	         * @member {number}
 	         * @default -1
@@ -9807,8 +9807,8 @@ var PIXI = (function (exports) {
 	}());
 
 	/*!
-	 * @pixi/interaction - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/interaction - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/interaction is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -10065,7 +10065,7 @@ var PIXI = (function (exports) {
 	         */
 	        this.target = null;
 	        /**
-	         * The object whose event listener’s callback is currently being invoked.
+	         * The object whose event listenerâ€™s callback is currently being invoked.
 	         *
 	         * @member {PIXI.DisplayObject}
 	         */
@@ -12003,8 +12003,8 @@ var PIXI = (function (exports) {
 	}(eventemitter3));
 
 	/*!
-	 * @pixi/runner - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/runner - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/runner is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -12199,8 +12199,8 @@ var PIXI = (function (exports) {
 	});
 
 	/*!
-	 * @pixi/core - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/core - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/core is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -16163,7 +16163,7 @@ var PIXI = (function (exports) {
 	    /**
 	    *
 	    * Adds an index buffer to the geometry
-	    * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, …). There is only ONE index buffer.
+	    * The index buffer contains integers, three for each triangle in the geometry, which reference the various attribute buffers (position, colour, UV coordinates, other UV coordinates, normal, â€¦). There is only ONE index buffer.
 	    *
 	    * @param {PIXI.Buffer|number[]} [buffer] - the buffer that holds the data of the index buffer. You can also provide an Array and a buffer will be created from it.
 	    * @return {PIXI.Geometry} returns self, useful for chaining.
@@ -23163,8 +23163,8 @@ var PIXI = (function (exports) {
 	var BatchRenderer = BatchPluginFactory.create();
 
 	/*!
-	 * @pixi/app - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/app - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/app is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -23435,8 +23435,8 @@ var PIXI = (function (exports) {
 	Application.registerPlugin(ResizePlugin);
 
 	/*!
-	 * @pixi/extract - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/extract - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/extract is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -23653,10 +23653,10 @@ var PIXI = (function (exports) {
 
 	'use strict';
 
-	function parseURI (str, opts) {
-	  if (!str) { return undefined }
+	var src = function (str, opts) {
+	  if ( opts === void 0 ) opts = {};
 
-	  opts = opts || {};
+	  if (!str) { return undefined }
 
 	  var o = {
 	    key: [
@@ -23680,8 +23680,8 @@ var PIXI = (function (exports) {
 	      parser: /(?:^|&)([^&=]*)=?([^&]*)/g
 	    },
 	    parser: {
-	      strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
-	      loose: /^(?:(?![^:@]+:[^:@\/]*@)([^:\/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/
+	      strict: /^(?:([^:/?#]+):)?(?:\/\/((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:/?#]*)(?::(\d*))?))?((((?:[^?#/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/,
+	      loose: /^(?:(?![^:@]+:[^:@/]*@)([^:/?#.]+):)?(?:\/\/)?((?:(([^:@]*)(?::([^:@]*))?)?@)?([^:/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#/]*\.[^?#/.]+(?:[?#]|$)))*\/?)?([^?#/]*))(?:\?([^#]*))?(?:#(.*))?)/
 	    }
 	  };
 
@@ -23697,9 +23697,7 @@ var PIXI = (function (exports) {
 	  });
 
 	  return uri
-	}
-
-	var parseUri = parseURI;
+	};
 
 	var miniSignals = createCommonjsModule(function (module, exports) {
 	'use strict';
@@ -25032,7 +25030,7 @@ var PIXI = (function (exports) {
 
 
 	    tempAnchor$1.href = url;
-	    url = parseUri(tempAnchor$1.href, {
+	    url = src(tempAnchor$1.href, {
 	      strictMode: true
 	    });
 	    var samePort = !url.port && loc.port === '' || url.port === loc.port;
@@ -26022,7 +26020,7 @@ var PIXI = (function (exports) {
 	   * @return {string} The prepared url.
 	   */
 	  _proto._prepareUrl = function _prepareUrl(url) {
-	    var parsedUrl = parseUri(url, {
+	    var parsedUrl = src(url, {
 	      strictMode: true
 	    });
 	    var result; // absolute url, just use it as is.
@@ -26209,8 +26207,8 @@ var PIXI = (function (exports) {
 	};
 
 	/*!
-	 * @pixi/loaders - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/loaders - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/loaders is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -26526,8 +26524,8 @@ var PIXI = (function (exports) {
 	}());
 
 	/*!
-	 * @pixi/particles - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/particles - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/particles is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -27329,8 +27327,8 @@ var PIXI = (function (exports) {
 	}(ObjectRenderer));
 
 	/*!
-	 * @pixi/graphics - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/graphics - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/graphics is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -30589,8 +30587,8 @@ var PIXI = (function (exports) {
 	}(Container));
 
 	/*!
-	 * @pixi/sprite - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/sprite - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/sprite is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -31170,8 +31168,8 @@ var PIXI = (function (exports) {
 	}(Container));
 
 	/*!
-	 * @pixi/text - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/text - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/text is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -32428,7 +32426,7 @@ var PIXI = (function (exports) {
 	     * It must return an array of characters.
 	     *
 	     * @example
-	     * // Correctly splits emojis, eg "🤪🤪" will result in two element array, each with one emoji.
+	     * // Correctly splits emojis, eg "ðŸ¤ªðŸ¤ª" will result in two element array, each with one emoji.
 	     * TextMetrics.wordWrapSplit = (token) => [...token];
 	     *
 	     * @param  {string}  token - The token to split
@@ -32588,9 +32586,9 @@ var PIXI = (function (exports) {
 	 * @memberof PIXI.TextMetrics
 	 * @name METRICS_STRING
 	 * @type {string}
-	 * @default |ÉqÅ
+	 * @default |Ã‰qÃ…
 	 */
-	TextMetrics.METRICS_STRING = '|ÉqÅ';
+	TextMetrics.METRICS_STRING = '|Ã‰qÃ…';
 	/**
 	 * Baseline symbol for calculate font metrics.
 	 *
@@ -32830,10 +32828,12 @@ var PIXI = (function (exports) {
 	                context.strokeStyle = 'black';
 	                var dropShadowColor = style.dropShadowColor;
 	                var rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+	                var dropShadowBlur = style.dropShadowBlur * this._resolution;
+	                var dropShadowDistance = style.dropShadowDistance * this._resolution;
 	                context.shadowColor = "rgba(" + rgb[0] * 255 + "," + rgb[1] * 255 + "," + rgb[2] * 255 + "," + style.dropShadowAlpha + ")";
-	                context.shadowBlur = style.dropShadowBlur;
-	                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-	                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * style.dropShadowDistance) + dsOffsetShadow;
+	                context.shadowBlur = dropShadowBlur;
+	                context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
+	                context.shadowOffsetY = (Math.sin(style.dropShadowAngle) * dropShadowDistance) + dsOffsetShadow;
 	            }
 	            else {
 	                // set canvas text styles
@@ -33217,8 +33217,8 @@ var PIXI = (function (exports) {
 	}(Sprite));
 
 	/*!
-	 * @pixi/prepare - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/prepare - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/prepare is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -33843,8 +33843,8 @@ var PIXI = (function (exports) {
 	}());
 
 	/*!
-	 * @pixi/spritesheet - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/spritesheet - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/spritesheet is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -34174,8 +34174,8 @@ var PIXI = (function (exports) {
 	}());
 
 	/*!
-	 * @pixi/sprite-tiling - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/sprite-tiling - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/sprite-tiling is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -34575,8 +34575,8 @@ var PIXI = (function (exports) {
 	}(ObjectRenderer));
 
 	/*!
-	 * @pixi/mesh - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/mesh - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/mesh is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -35280,8 +35280,8 @@ var PIXI = (function (exports) {
 	}(Geometry));
 
 	/*!
-	 * @pixi/text-bitmap - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/text-bitmap - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/text-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -35757,21 +35757,15 @@ var PIXI = (function (exports) {
 	    // set canvas text styles
 	    context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
 	    context.strokeStyle = style.stroke;
-	    context.font = style.toFontString();
-	    context.lineWidth = style.strokeThickness;
-	    context.textBaseline = style.textBaseline;
-	    context.lineJoin = style.lineJoin;
-	    context.miterLimit = style.miterLimit;
-	    // set canvas text styles
-	    context.fillStyle = generateFillStyle(canvas, context, style, resolution, [char], metrics);
-	    context.strokeStyle = style.stroke;
-	    var dropShadowColor = style.dropShadowColor;
-	    var rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
 	    if (style.dropShadow) {
+	        var dropShadowColor = style.dropShadowColor;
+	        var rgb = hex2rgb(typeof dropShadowColor === 'number' ? dropShadowColor : string2hex(dropShadowColor));
+	        var dropShadowBlur = style.dropShadowBlur * resolution;
+	        var dropShadowDistance = style.dropShadowDistance * resolution;
 	        context.shadowColor = "rgba(" + rgb[0] * 255 + "," + rgb[1] * 255 + "," + rgb[2] * 255 + "," + style.dropShadowAlpha + ")";
-	        context.shadowBlur = style.dropShadowBlur;
-	        context.shadowOffsetX = Math.cos(style.dropShadowAngle) * style.dropShadowDistance;
-	        context.shadowOffsetY = Math.sin(style.dropShadowAngle) * style.dropShadowDistance;
+	        context.shadowBlur = dropShadowBlur;
+	        context.shadowOffsetX = Math.cos(style.dropShadowAngle) * dropShadowDistance;
+	        context.shadowOffsetY = Math.sin(style.dropShadowAngle) * dropShadowDistance;
 	    }
 	    else {
 	        context.shadowColor = 'black';
@@ -37074,8 +37068,8 @@ var PIXI = (function (exports) {
 	}());
 
 	/*!
-	 * @pixi/filter-alpha - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/filter-alpha - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/filter-alpha is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -37160,8 +37154,8 @@ var PIXI = (function (exports) {
 	}(Filter));
 
 	/*!
-	 * @pixi/filter-blur - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/filter-blur - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/filter-blur is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -37984,8 +37978,8 @@ var PIXI = (function (exports) {
 	}(Filter));
 
 	/*!
-	 * @pixi/filter-color-matrix - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/filter-color-matrix - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/filter-color-matrix is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38032,7 +38026,7 @@ var PIXI = (function (exports) {
 	 *  container.filters = [colorMatrix];
 	 *  colorMatrix.contrast(2);
 	 * ```
-	 * @author Clément Chenebault <clement@goodboydigital.com>
+	 * @author ClÃ©ment Chenebault <clement@goodboydigital.com>
 	 * @class
 	 * @extends PIXI.Filter
 	 * @memberof PIXI.filters
@@ -38513,8 +38507,8 @@ var PIXI = (function (exports) {
 	ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
 
 	/*!
-	 * @pixi/filter-displacement - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/filter-displacement - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/filter-displacement is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38644,8 +38638,8 @@ var PIXI = (function (exports) {
 	}(Filter));
 
 	/*!
-	 * @pixi/filter-fxaa - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/filter-fxaa - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/filter-fxaa is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38705,8 +38699,8 @@ var PIXI = (function (exports) {
 	}(Filter));
 
 	/*!
-	 * @pixi/filter-noise - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/filter-noise - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/filter-noise is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -38806,8 +38800,8 @@ var PIXI = (function (exports) {
 	}(Filter));
 
 	/*!
-	 * @pixi/mixin-cache-as-bitmap - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/mixin-cache-as-bitmap - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/mixin-cache-as-bitmap is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39123,8 +39117,8 @@ var PIXI = (function (exports) {
 	};
 
 	/*!
-	 * @pixi/mixin-get-child-by-name - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/mixin-get-child-by-name - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/mixin-get-child-by-name is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -39170,8 +39164,8 @@ var PIXI = (function (exports) {
 	};
 
 	/*!
-	 * @pixi/mixin-get-global-position - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/mixin-get-global-position - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/mixin-get-global-position is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -40631,8 +40625,8 @@ var PIXI = (function (exports) {
 	}
 
 	/*!
-	 * @pixi/mesh-extras - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/mesh-extras - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/mesh-extras is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41355,8 +41349,8 @@ var PIXI = (function (exports) {
 	}(SimplePlane));
 
 	/*!
-	 * @pixi/sprite-animated - v5.3.11
-	 * Compiled Mon, 01 Nov 2021 16:13:35 UTC
+	 * @pixi/sprite-animated - v5.3.12
+	 * Compiled Wed, 23 Mar 2022 18:38:07 UTC
 	 *
 	 * @pixi/sprite-animated is licensed under the MIT License.
 	 * http://www.opensource.org/licenses/mit-license
@@ -41834,7 +41828,7 @@ var PIXI = (function (exports) {
 	 * @name VERSION
 	 * @type {string}
 	 */
-	var VERSION$1 = '5.3.11';
+	var VERSION$1 = '5.3.12';
 	/**
 	 * @namespace PIXI
 	 */
@@ -41999,4 +41993,3 @@ var PIXI = (function (exports) {
 
 }({}));
 PIXI.useDeprecated();
-//# sourceMappingURL=pixi.js.map
