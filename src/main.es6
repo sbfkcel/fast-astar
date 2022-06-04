@@ -519,7 +519,7 @@ class Demo{
         });
 
         let sprite = new PIXI.Sprite(new PIXI.Texture(
-            new PIXI.BaseTexture.fromDeprecated(canvas),
+            new PIXI.BaseTexture.fromCanvas(canvas),
             new PIXI.Rectangle(0,0,canvasW,canvasH)
         ));
         sprite.alpha = 0.8;
