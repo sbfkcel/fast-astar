@@ -161,6 +161,11 @@ class Grid {
         this.useQuadTree = this.size > 10000000;
         this.quadTree = null;
         this.quadTreeBuilt = false;
+        
+        // 可选的 render 回调函数，用于可视化搜索过程
+        this.render = (typeof options === 'object' && options !== null && typeof options.render === 'function') 
+            ? options.render 
+            : null;
     }
     
     // 内存高效模式：使用位图存储障碍物，按需创建节点对象
@@ -181,15 +186,16 @@ class Grid {
         for (let y = 0; y < this.row; y++) {
             grid[y] = new Array(this.col);
             for (let x = 0; x < this.col; x++) {
-                grid[y][x] = {
-                    x: x,
-                    y: y,
-                    value: 0,  // 0: 可通行, 1: 障碍物
-                    g: 0,      // 从起点到当前点的实际代价
-                    h: 0,      // 从当前点到终点的启发式代价
-                    f: 0,      // f = g + h
-                    parent: null
-                };
+            grid[y][x] = {
+                x: x,
+                y: y,
+                value: 0,  // 0: 可通行, 1: 障碍物
+                g: 0,      // 从起点到当前点的实际代价
+                h: 0,      // 从当前点到终点的启发式代价
+                f: 0,      // f = g + h
+                parent: null,
+                key: [x, y]  // 用于兼容原始 API
+            };
             }
         }
         
@@ -228,7 +234,8 @@ class Grid {
                 g: 0,
                 h: 0,
                 f: 0,
-                parent: null
+                parent: null,
+                key: [x, y]  // 用于兼容原始 API
             });
         }
         
@@ -338,16 +345,63 @@ class Grid {
         return true;
     }
     
+    // 获取节点（兼容原始 API：get([x, y])）
+    get(point) {
+        if (!Array.isArray(point) || point.length < 2) {
+            return null;
+        }
+        return this.getNodeAt(point[0], point[1]);
+    }
+    
     // 获取节点
     getNodeAt(x, y) {
         if (!this.isValidCoordinate(x, y)) {
             return null;
         }
         
+        let node;
         if (this.useMemoryEfficientMode) {
-            return this.getOrCreateNode(x, y);
+            node = this.getOrCreateNode(x, y);
         } else {
-            return this.grid[y][x];
+            node = this.grid[y][x];
+        }
+        
+        // 确保节点有 key 属性（用于兼容原始 API）
+        if (node && !node.key) {
+            node.key = [x, y];
+        }
+        
+        // 如果设置了 render 回调，确保节点有 render 属性
+        if (node && this.render) {
+            node.render = this.render;
+        }
+        
+        return node;
+    }
+    
+    // 设置节点属性（兼容原始 API：set([x, y], 'key', value)）
+    set(point, key, val) {
+        if (!Array.isArray(point) || point.length < 2) {
+            return;
+        }
+        
+        const node = this.getNodeAt(point[0], point[1]);
+        if (!node) {
+            return;
+        }
+        
+        // 设置节点属性
+        node[key] = val;
+        
+        // 如果设置的是 value（障碍物），同步到网格
+        if (key === 'value') {
+            this.setWalkAt(point[0], point[1], val === 0);
+        }
+        
+        // 触发 render 回调
+        if (this.render && typeof this.render === 'function') {
+            // render 回调的 this 指向节点本身
+            this.render.call(node, { key, val });
         }
     }
     

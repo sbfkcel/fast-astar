@@ -141,6 +141,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             
             const rightAngle = options.rightAngle || false;
             const optimalResult = options.optimalResult !== false;
+            const hasRender = !!(this.grid && typeof this.grid.render === 'function');
             
             // 重置搜索状态
             this.openHeap = new BinaryHeap();
@@ -173,6 +174,20 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             startNode.f = startNode.h;
             startNode.parent = null;
             
+            // 仅用于演示：将分数同步回节点对象（只在提供 render 时启用）
+            if (hasRender && this.gridData && this.gridData[startY] && this.gridData[startY][startX]) {
+                const gridNode = this.gridData[startY][startX];
+                gridNode.g = startNode.g;
+                gridNode.h = startNode.h;
+                gridNode.f = startNode.f;
+                gridNode.parent = startNode.parent;
+            }
+            
+            // 触发 render 回调：起点加入开放列表（在设置 g、h、f 之后）
+            if (hasRender && this.grid.set) {
+                this.grid.set([startX, startY], 'type', 'open');
+            }
+            
             this.openHeap.push(startNode);
             this.openSet.add([startX, startY].toString());
             
@@ -183,8 +198,18 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                 this.openSet.delete(currentKey);
                 this.closedSet.add(currentKey);
                 
+                // 触发 render 回调：高亮当前检查的节点
+                if (hasRender && this.grid.set) {
+                    this.grid.set([current.x, current.y], 'type', 'highlight');
+                }
+                
                 if (current.x === endX && current.y === endY) {
                     return this.reconstructPath(current);
+                }
+                
+                // 触发 render 回调：当前节点加入关闭列表
+                if (hasRender && this.grid.set) {
+                    this.grid.set([current.x, current.y], 'type', 'close');
                 }
                 
                 const neighbors = this.getNeighbors(current, rightAngle);
@@ -203,12 +228,39 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                         neighbor.h = this.manhattanDistance(neighbor.x, neighbor.y, endX, endY);
                         neighbor.f = neighbor.g + neighbor.h;
                         
+                        // 仅用于演示：将分数同步回节点对象（只在提供 render 时启用）
+                        if (hasRender && this.gridData && this.gridData[neighbor.y] && this.gridData[neighbor.y][neighbor.x]) {
+                            const gridNode = this.gridData[neighbor.y][neighbor.x];
+                            gridNode.g = neighbor.g;
+                            gridNode.h = neighbor.h;
+                            gridNode.f = neighbor.f;
+                            gridNode.parent = neighbor.parent;
+                        }
+                        
+                        // 触发 render 回调：新节点加入开放列表（在设置 g、h、f 之后）
+                        if (hasRender && this.grid.set) {
+                            this.grid.set([neighbor.x, neighbor.y], 'type', 'open');
+                        }
+                        
                         this.openHeap.push(neighbor);
                         this.openSet.add(neighborKey);
                     } else if (tentativeG < neighbor.g) {
                         neighbor.parent = [current.x, current.y];
                         neighbor.g = tentativeG;
                         neighbor.f = neighbor.g + neighbor.h;
+                        
+                        // 仅用于演示：将分数同步回节点对象（只在提供 render 时启用）
+                        if (hasRender && this.gridData && this.gridData[neighbor.y] && this.gridData[neighbor.y][neighbor.x]) {
+                            const gridNode = this.gridData[neighbor.y][neighbor.x];
+                            gridNode.g = neighbor.g;
+                            gridNode.f = neighbor.f;
+                            gridNode.parent = neighbor.parent;
+                        }
+                        
+                        // 触发 render 回调：更新节点（在设置 g、f 之后）
+                        if (hasRender && this.grid.set) {
+                            this.grid.set([neighbor.x, neighbor.y], 'type', 'update');
+                        }
                         // 需要重新调整堆，但BinaryHeap没有update方法，这里先简化处理
                     }
                 }
@@ -656,6 +708,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             // 原有的Master A*实现（适用于中小型网格）- 使用二叉堆优化
             const rightAngle = options.rightAngle || false;
             const optimalResult = options.optimalResult !== false;
+            const hasRender = !!(this.grid && typeof this.grid.render === 'function');
             
             // 重置状态
             this.closedList.fill(0);
@@ -673,6 +726,21 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             this.gScore[startIndex] = 0;
             this.fScore[startIndex] = this.manhattanDistance(start[0], start[1], end[0], end[1]);
             
+            // 触发 render 回调：起点加入开放列表
+            if (hasRender && this.grid.set) {
+                // 将 TypedArray 中的 g/h/f 同步回节点对象（用于演示显示）
+                const startNodeObj = this.gridData && this.gridData[start[1]] ? this.gridData[start[1]][start[0]] : null;
+                if (startNodeObj) {
+                    const g = this.gScore[startIndex];
+                    const f = this.fScore[startIndex];
+                    startNodeObj.g = g;
+                    startNodeObj.f = f;
+                    startNodeObj.h = f - g;
+                    startNodeObj.parent = null;
+                }
+                this.grid.set(start, 'type', 'open');
+            }
+            
             openHeap.push(startIndex);
             this.inOpenList[startIndex] = 1;
             
@@ -686,12 +754,52 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                 this.inOpenList[currentIndex] = 0;
                 this.closedList[currentIndex] = 1;
                 
+                const currentX = currentIndex % this.width;
+                const currentY = Math.floor(currentIndex / this.width);
+                
+                // 触发 render 回调：高亮当前检查的节点
+                if (hasRender && this.grid.set) {
+                    // 同步当前节点的 g/h/f（用于演示显示）
+                    const curNodeObj = this.gridData && this.gridData[currentY] ? this.gridData[currentY][currentX] : null;
+                    if (curNodeObj) {
+                        const g = this.gScore[currentIndex];
+                        const f = this.fScore[currentIndex];
+                        curNodeObj.g = g;
+                        curNodeObj.f = f;
+                        curNodeObj.h = f - g;
+                        const p = this.parent[currentIndex];
+                        if (p === -1) {
+                            curNodeObj.parent = null;
+                        } else {
+                            curNodeObj.parent = [p % this.width, Math.floor(p / this.width)];
+                        }
+                    }
+                    this.grid.set([currentX, currentY], 'type', 'highlight');
+                }
+                
                 if (currentIndex === endIndex) {
                     return this.reconstructPathFromIndex(currentIndex, start, end);
                 }
                 
-                const currentX = currentIndex % this.width;
-                const currentY = Math.floor(currentIndex / this.width);
+                // 触发 render 回调：当前节点加入关闭列表
+                if (hasRender && this.grid.set) {
+                    // 关闭节点前也同步一遍（用于演示显示）
+                    const curNodeObj = this.gridData && this.gridData[currentY] ? this.gridData[currentY][currentX] : null;
+                    if (curNodeObj) {
+                        const g = this.gScore[currentIndex];
+                        const f = this.fScore[currentIndex];
+                        curNodeObj.g = g;
+                        curNodeObj.f = f;
+                        curNodeObj.h = f - g;
+                        const p = this.parent[currentIndex];
+                        if (p === -1) {
+                            curNodeObj.parent = null;
+                        } else {
+                            curNodeObj.parent = [p % this.width, Math.floor(p / this.width)];
+                        }
+                    }
+                    this.grid.set([currentX, currentY], 'type', 'close');
+                }
                 
                 // 检查邻居
                 for (const [dx, dy] of directions) {
@@ -718,9 +826,37 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                         
                         // 添加到开放列表（如果不存在）
                         if (!this.inOpenList[neighborIndex]) {
+                            // 触发 render 回调：新节点加入开放列表
+                            if (hasRender && this.grid.set) {
+                                // 同步邻居节点的 g/h/f + parent（用于演示显示）
+                                const nObj = this.gridData && this.gridData[neighborY] ? this.gridData[neighborY][neighborX] : null;
+                                if (nObj) {
+                                    const g = this.gScore[neighborIndex];
+                                    const f = this.fScore[neighborIndex];
+                                    nObj.g = g;
+                                    nObj.f = f;
+                                    nObj.h = f - g;
+                                    nObj.parent = [currentX, currentY];
+                                }
+                                this.grid.set([neighborX, neighborY], 'type', 'open');
+                            }
                             openHeap.push(neighborIndex);
                             this.inOpenList[neighborIndex] = 1;
                         } else {
+                            // 触发 render 回调：更新节点
+                            if (hasRender && this.grid.set) {
+                                // 同步邻居节点的 g/h/f + parent（用于演示显示）
+                                const nObj = this.gridData && this.gridData[neighborY] ? this.gridData[neighborY][neighborX] : null;
+                                if (nObj) {
+                                    const g = this.gScore[neighborIndex];
+                                    const f = this.fScore[neighborIndex];
+                                    nObj.g = g;
+                                    nObj.f = f;
+                                    nObj.h = f - g;
+                                    nObj.parent = [currentX, currentY];
+                                }
+                                this.grid.set([neighborX, neighborY], 'type', 'update');
+                            }
                             // 如果已在开放列表中，更新堆位置
                             openHeap.update(neighborIndex);
                         }
