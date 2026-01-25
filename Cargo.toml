@@ -1,0 +1,47 @@
+[package]
+name = "astar-wasm"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = { version = "0.2", default-features = false }
+
+# 开发模式配置 - 快速编译，保留调试信息
+[profile.dev]
+opt-level = 0
+debug = true
+overflow-checks = true
+lto = false
+panic = "unwind"
+incremental = true
+codegen-units = 256
+
+# 生产模式配置 - 速度优化（而非大小优化）
+[profile.release]
+# 速度优化（3级优化）
+opt-level = 3
+# 链接时优化
+lto = "fat"
+# 单个代码生成单元
+codegen-units = 1
+# 使用 abort 而不是 unwind
+panic = "abort"
+# 去除调试信息
+debug = false
+# 去除溢出检查
+overflow-checks = false
+# 去除边界检查
+debug-assertions = false
+# 禁用增量编译以获得更好优化
+incremental = false
+
+# 启用 wasm-opt 进一步优化（与 RUSTFLAGS +simd128/+bulk-memory 对应）
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-O3", "--enable-mutable-globals", "--enable-simd", "--enable-bulk-memory"]
+
+# 速度优化
+[profile.release.package."*"]
+opt-level = 3

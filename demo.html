@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Smart A* Algorithm - 最终演示</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .demo-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .output {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+        
+        .error {
+            color: #ff6b6b;
+        }
+        
+        .success {
+            color: #4CAF50;
+        }
+        
+        .warning {
+            color: #ffa726;
+        }
+        
+        .loading {
+            color: #42a5f5;
+        }
+        
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .grid {
+            display: inline-block;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        .grid-row {
+            display: flex;
+        }
+        
+        .grid-cell {
+            width: 8px;
+            height: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .cell-walkable { background: white; }
+        .cell-obstacle { background: #333; }
+        .cell-start { background: #4CAF50; }
+        .cell-end { background: #f44336; }
+        .cell-path { background: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Smart A* Algorithm</h1>
+        <p style="text-align: center; font-size: 1.2em;">
+            最终整合版本 - 智能自适应A*算法演示
+        </p>
+        
+        <div class="demo-section">
+            <h2>📋 加载状态</h2>
+            <div id="loading-status" class="output">正在加载...</div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🎮 基础演示</h2>
+            <button id="btn-basic" onclick="runBasicDemo()" disabled>基础路径查找</button>
+            <button id="btn-smart" onclick="runSmartDemo()" disabled>智能自适应</button>
+            <button id="btn-preset" onclick="runPresetDemo()" disabled>预设配置</button>
+            <button id="btn-wasm" onclick="runWasmDemo()" disabled>WebAssembly测试</button>
+            <div id="basic-output" class="output"></div>
+            <div id="grid-display" class="grid-container"></div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>⚡ 性能测试</h2>
+            <button id="btn-benchmark" onclick="runBenchmark()" disabled>性能基准测试</button>
+            <button id="btn-comparison" onclick="runComparison()" disabled>实现对比</button>
+            <div id="performance-output" class="output"></div>
+        </div>
+    </div>
+
+    <!-- 使用 ES Module 加载脚本 -->
+    <script type="module">
+        import AstarLib, { Grid, Astar } from './index.js';
+        
+        // 将模块导出到全局作用域以便其他脚本使用
+        window.AstarLib = AstarLib;
+        window.Grid = Grid;
+        window.Astar = Astar;
+        
+        // 触发初始化
+        window.dispatchEvent(new Event('modulesLoaded'));
+    </script>
+    
+    <script>
+        let astarLib;
+        let isLibraryLoaded = false;
+        
+        // 初始化函数
+        function initializeLibrary() {
+            try {
+                // 检查依赖
+                if (typeof Grid === 'undefined') {
+                    throw new Error('Grid 类未加载');
+                }
+                if (typeof Astar === 'undefined') {
+                    throw new Error('Astar 类未加载');
+                }
+                if (typeof AstarLib === 'undefined') {
+                    throw new Error('AstarLib 未加载');
+                }
+                
+                astarLib = window.AstarLib;
+                
+                if (!astarLib) {
+                    throw new Error('Smart A* Library 未正确加载');
+                }
+                
+                // 测试基本功能
+                const testGrid = new astarLib.Grid({ col: 5, row: 5 });
+                if (!testGrid) {
+                    throw new Error('Grid 创建测试失败');
+                }
+                
+                isLibraryLoaded = true;
+                
+                logStatus('✅ Smart A* Algorithm Library 已成功加载到浏览器环境', 'success');
+                logStatus(`📱 环境: ${astarLib.getEnvironmentInfo().platform}`, 'success');
+                logStatus(`💾 内存: ${astarLib.getEnvironmentInfo().memory}`, 'success');
+                logStatus(`🖥️  CPU核心: ${astarLib.getEnvironmentInfo().cores}`, 'success');
+                logStatus(`🌐 WebAssembly: ${astarLib.getEnvironmentInfo().webAssemblySupport ? '支持' : '不支持'}`, 'success');
+                
+                // 启用按钮
+                enableButtons();
+                
+            } catch (error) {
+                logStatus('❌ 初始化失败: ' + error.message, 'error');
+                logStatus('💡 请检查脚本加载顺序和文件路径', 'warning');
+                
+                // 显示调试信息
+                logStatus('\n🔍 调试信息:', 'warning');
+                logStatus(`Grid 类: ${typeof Grid !== 'undefined' ? '✅' : '❌'}`, 'warning');
+                logStatus(`Astar 类: ${typeof Astar !== 'undefined' ? '✅' : '❌'}`, 'warning');
+                logStatus(`AstarLib: ${typeof AstarLib !== 'undefined' ? '✅' : '❌'}`, 'warning');
+            }
+        }
+        
+        function enableButtons() {
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.disabled = false;
+            });
+        }
+        
+        function logStatus(message, type = 'loading') {
+            const output = document.getElementById('loading-status');
+            if (output) {
+                const span = document.createElement('span');
+                span.className = type;
+                span.textContent = message + '\n';
+                output.appendChild(span);
+                output.scrollTop = output.scrollHeight;
+            }
+            console.log(message);
+        }
+        
+        function log(message, elementId = 'basic-output') {
+            const output = document.getElementById(elementId);
+            if (output) {
+                output.textContent += message + '\n';
+                output.scrollTop = output.scrollHeight;
+            }
+            console.log(message);
+        }
+        
+        function logError(message, elementId = 'basic-output') {
+            const output = document.getElementById(elementId);
+            if (output) {
+                const span = document.createElement('span');
+                span.className = 'error';
+                span.textContent = message + '\n';
+                output.appendChild(span);
+                output.scrollTop = output.scrollHeight;
+            }
+            console.error(message);
+        }
+        
+        // 等待ES Module加载完成后初始化
+        window.addEventListener('modulesLoaded', function() {
+            // 延迟一点确保所有模块都加载完成
+            setTimeout(initializeLibrary, 100);
+        });
+        
+        // 如果模块已经加载，直接初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.AstarLib) {
+                setTimeout(initializeLibrary, 100);
+            }
+        });
+        
+        // 演示函数
+        async function runBasicDemo() {
+            if (!isLibraryLoaded) {
+                logError('库未正确加载');
+                return;
+            }
+            
+            try {
+                log('🎮 运行基础路径查找演示...');
+                
+                const grid = new astarLib.Grid({ col: 10, row: 10 });
+                const astar = new astarLib.Astar(grid);
+                
+                const path = await astar.search([0, 0], [9, 9]);
+                
+                if (path) {
+                    log(`✅ 找到路径，长度: ${path.length}`);
+                    log(`实现: ${astar.getCurrentImplementation().name}`);
+                    
+                    // 可视化路径
+                    visualizeGrid(grid, path, [0, 0], [9, 9]);
+                } else {
+                    log('❌ 未找到路径');
+                }
+                
+            } catch (error) {
+                logError('基础演示失败: ' + error.message);
+            }
+        }
+        
+        async function runSmartDemo() {
+            if (!isLibraryLoaded) {
+                logError('库未正确加载');
+                return;
+            }
+            
+            try {
+                log('🧠 运行智能自适应演示...');
+                
+                const sizes = [10, 100, 300];
+                
+                for (const size of sizes) {
+                    const astar = astarLib.createSmartAstar({ col: size, row: size });
+                    const path = await astar.search([0, 0], [size-1, size-1]);
+                    
+                    log(`${size}x${size} 网格:`);
+                    log(`  选择实现: ${astar.getCurrentImplementation().name}`);
+                    log(`  路径长度: ${path ? path.length : '无路径'}`);
+                }
+                
+            } catch (error) {
+                logError('智能演示失败: ' + error.message);
+            }
+        }
+        
+        async function runPresetDemo() {
+            if (!isLibraryLoaded) {
+                logError('库未正确加载');
+                return;
+            }
+            
+            try {
+                log('⚙️  运行预设配置演示...');
+                
+                const grid = new astarLib.Grid({ col: 50, row: 50 });
+                
+                const presets = [
+                    { name: 'game', func: astarLib.createGameAstar },
+                    { name: 'web', func: astarLib.createWebAstar },
+                    { name: 'mobile', func: astarLib.createMobileAstar }
+                ];
+                
+                for (const preset of presets) {
+                    const astar = preset.func(grid);
+                    
+                    log(`${preset.name} 预设:`);
+                    log(`  实现: ${astar.getCurrentImplementation().name}`);
+                }
+                
+            } catch (error) {
+                logError('预设演示失败: ' + error.message);
+            }
+        }
+        
+        async function runWasmDemo() {
+            if (!isLibraryLoaded) {
+                logError('库未正确加载');
+                return;
+            }
+            
+            try {
+                log('🚀 运行 WebAssembly 演示...');
+                
+                if (!astarLib.getEnvironmentInfo().webAssemblySupport) {
+                    log('❌ 当前环境不支持 WebAssembly');
+                    return;
+                }
+                
+                // 尝试创建WebAssembly版本
+                const grid = new astarLib.Grid({ col: 100, row: 100 });
+                const astar = new astarLib.Astar(grid, { prefer: 'wasm' });
+                
+                log('🔄 测试 WebAssembly 路径查找...');
+                const startTime = performance.now();
+                const path = await astar.search([0, 0], [99, 99]);
+                const endTime = performance.now();
+                
+                if (path) {
+                    log(`✅ WebAssembly 搜索成功`);
+                    log(`  路径长度: ${path.length}`);
+                    log(`  搜索时间: ${(endTime - startTime).toFixed(3)}ms`);
+                    log(`  实际使用: ${astar.getCurrentImplementation().name}`);
+                } else {
+                    log('❌ WebAssembly 搜索失败');
+                }
+                
+            } catch (error) {
+                logError('WebAssembly 演示失败: ' + error.message);
+            }
+        }
+        
+        async function runBenchmark() {
+            if (!isLibraryLoaded) {
+                logError('库未正确加载', 'performance-output');
+                return;
+            }
+            
+            try {
+                log('⚡ 运行性能基准测试...', 'performance-output');
+                
+                const sizes = [25, 50, 100];
+                
+                for (const size of sizes) {
+                    log(`\n测试 ${size}x${size} 网格:`, 'performance-output');
+                    
+                    const result = astarLib.benchmark(size, 20);
+                    
+                    log(`  平均时间: ${result.avgTime.toFixed(3)}ms`, 'performance-output');
+                    log(`  吞吐量: ${result.throughput.toFixed(1)} ops/s`, 'performance-output');
+                }
+                
+            } catch (error) {
+                logError('性能测试失败: ' + error.message, 'performance-output');
+            }
+        }
+        
+        async function runComparison() {
+            if (!isLibraryLoaded) {
+                logError('库未正确加载', 'performance-output');
+                return;
+            }
+            
+            try {
+                log('📊 运行实现对比测试...', 'performance-output');
+                
+                const grid = new astarLib.Grid({ col: 50, row: 50 });
+                const implementations = [
+                    { name: 'Ultra A*', options: { prefer: 'ultra' } },
+                    { name: 'Master A*', options: { prefer: 'master' } },
+                    { name: 'WebAssembly A*', options: { prefer: 'wasm' } }
+                ];
+                
+                for (const impl of implementations) {
+                    try {
+                        const astar = new astarLib.Astar(grid, impl.options);
+                        
+                        const startTime = performance.now();
+                        const path = await astar.search([0, 0], [49, 49]);
+                        const endTime = performance.now();
+                        
+                        const actualImpl = astar.getCurrentImplementation().name;
+                        const searchTime = endTime - startTime;
+                        
+                        log(`\n${impl.name}:`, 'performance-output');
+                        log(`  实际使用: ${actualImpl}`, 'performance-output');
+                        log(`  搜索时间: ${searchTime.toFixed(3)}ms`, 'performance-output');
+                        log(`  路径长度: ${path ? path.length : '无路径'}`, 'performance-output');
+                        
+                    } catch (error) {
+                        log(`\n${impl.name}: 测试失败 - ${error.message}`, 'performance-output');
+                    }
+                }
+                
+            } catch (error) {
+                logError('对比测试失败: ' + error.message, 'performance-output');
+            }
+        }
+        
+        // 可视化网格
+        function visualizeGrid(grid, path = [], start = null, end = null, obstacles = []) {
+            const container = document.getElementById('grid-display');
+            container.innerHTML = '';
+            
+            const gridDiv = document.createElement('div');
+            gridDiv.className = 'grid';
+            
+            const pathSet = new Set(path.map(p => `${p[0]},${p[1]}`));
+            const obstacleSet = new Set(obstacles.map(o => `${o[0]},${o[1]}`));
+            
+            for (let y = 0; y < grid.row; y++) {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'grid-row';
+                
+                for (let x = 0; x < grid.col; x++) {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.className = 'grid-cell';
+                    
+                    const key = `${x},${y}`;
+                    const isWalkable = grid.isWalkableAt(x, y);
+                    
+                    if (start && x === start[0] && y === start[1]) {
+                        cellDiv.className += ' cell-start';
+                    } else if (end && x === end[0] && y === end[1]) {
+                        cellDiv.className += ' cell-end';
+                    } else if (pathSet.has(key)) {
+                        cellDiv.className += ' cell-path';
+                    } else if (!isWalkable || obstacleSet.has(key)) {
+                        cellDiv.className += ' cell-obstacle';
+                    } else {
+                        cellDiv.className += ' cell-walkable';
+                    }
+                    
+                    rowDiv.appendChild(cellDiv);
+                }
+                
+                gridDiv.appendChild(rowDiv);
+            }
+            
+            container.appendChild(gridDiv);
+        }
+    </script>
+</body>
+</html>

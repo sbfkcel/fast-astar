@@ -1,8 +1,26 @@
-/dev/
-/node_modules/
-/.vscode/
-/.rpt2_cache/
-.vscode
-.rpt2_cache
+# Rust 构建目录
+target/
+
+# wasm-pack 输出目录
+pkg/
+
+# Node.js
+node_modules/
+package-lock.json
+
+# macOS
 .DS_Store
-project.config.json
+
+# 日志
+*.log
+
+# 编辑器/IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 环境变量
+.env
+.env.local
