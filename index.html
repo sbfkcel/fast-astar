@@ -13,7 +13,7 @@
 	.bar {width:982px; height:64px; padding:6px 0 12px 20px; position:fixed; left:50%; bottom:0; margin-left:-501px; background:#03B57F; box-shadow:0 0 30px rgba(0,0,0,0.2);}
 	.bar li {height:64px; list-style:none; float:left; margin-right:18px;}
 	label {display:block; font-size:12px; height:24px; line-height:24px; color:white;}
-	select {width:178px; border:0; border-radius:0; height:40px; line-height:40px; font-size:20px; -webkit-appearance:button; padding-left:10px;}
+	select {width:145px; border:0; border-radius:0; height:40px; line-height:40px; font-size:20px; -webkit-appearance:button; padding-left:10px;}
 	.main {width:1002px; margin:0 auto; padding:24px 0 88px 0;}
 	.app {width:1002px; height:602px;}
 	.result {height:20px; line-height:20px; font-size:14px; color:#666; padding:10px; margin-bottom:48px; border:1px #ccc dashed; box-shadow:0 10px 10px rgba(0,0,0,0.08); white-space:nowrap; overflow-x:auto;}
@@ -95,10 +95,21 @@ console.log('Result',path);      // [[2,3],[3,2],[4,1],[5,1],[6,1],[7,2],[8,3]]
 	</div>
 	<ul class="bar">
 		<li>
+			<label for="algorithm">Algorithm</label>
+			<select name="algorithm" id="algorithm">
+				<option value="auto">auto (Smart)</option>
+				<option value="ultra">Ultra A*</option>
+				<option value="master">Master A*</option>
+				<option value="wasm">WebAssembly A*</option>
+			</select>
+		</li>
+		<li>
 			<label for="grid">Grid Size</label>
 			<select name="grid" id="grid">
 				<option value="20,12">20x12</option>
 				<option value="40,24">40x24</option>
+				<option value="80,48">80x48</option>
+				<option value="100,60">100x60</option>
 			</select>
 		</li>
 		<li>
@@ -152,8 +163,6 @@ console.log('Result',path);      // [[2,3],[3,2],[4,1],[5,1],[6,1],[7,2],[8,3]]
 	<script>hljs.initHighlightingOnLoad();</script>
 	<script src="./dist/pixi.js"></script>
 	<script src="./dist/pixi-layers.js"></script>
-	<script src="./dist/Grid.js"></script>
-	<script src="./dist/Astar.js"></script>
-	<script src="./dist/main.js"></script>
+	<script type="module" src="./main.js"></script>
 </body>
 </html>
