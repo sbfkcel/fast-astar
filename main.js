@@ -455,8 +455,12 @@ class Demo{
         _ts.drawEventAndBackground();
         _ts.drawStartEnd();
         
-        // 如果有路径，立即绘制最终路径
-        if(result && result.length > 0){
+        // 如果有路径且没有动画任务，立即绘制最终路径
+        // 如果有动画任务（taskData.list 中有 open/close/highlight 事件），则让动画过程来绘制路径
+        const hasAnimationTasks = taskData.list.some(item => 
+            item.open || item.close || item.highlight || item.update
+        );
+        if(result && result.length > 0 && !hasAnimationTasks){
             const color = 0xFFFF00;
             const grap = _ts._drawPath(color, result);
             grap.parentGroup = _ts.pixiGroup.path;
