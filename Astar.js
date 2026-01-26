@@ -157,7 +157,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             }
             
             const rightAngle = options.rightAngle || false;
-            const optimalResult = options.optimalResult !== false;
+            const optimalResult = options.optimalResult !== false; // default true, ensures optimal when true
             const hasRender = !!(this.grid && typeof this.grid.render === 'function');
             
             // 重置搜索状态
@@ -442,7 +442,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
         
         search(start, end, options = {}) {
             const rightAngle = options.rightAngle || false;
-            const optimalResult = options.optimalResult !== false;
+            const optimalResult = true; // always optimal paths
             
             // 清理之前的搜索状态
             this.closedSet.clear();
@@ -738,7 +738,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             
             // 原有的Master A*实现（适用于中小型网格）- 使用二叉堆优化
             const rightAngle = options.rightAngle || false;
-            const optimalResult = options.optimalResult !== false;
+            const optimalResult = options.optimalResult !== false; // default true, ensures optimal when true
             const hasRender = !!(this.grid && typeof this.grid.render === 'function');
             
             // 重置状态
@@ -1252,8 +1252,9 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             if (this.initialized && this.wasmGrid) {
                 try {
                     // 🚀 使用Rust WebAssembly实现
+                    const optimalResult = options.optimalResult !== false; // default true
                     const searchStart = getPerformanceNow();
-                    const pathData = this.wasmGrid.findPath(start[0], start[1], end[0], end[1]);
+                    const pathData = this.wasmGrid.findPath(start[0], start[1], end[0], end[1], optimalResult);
                     const searchTime = getPerformanceNow() - searchStart;
                     
                     if (pathData && pathData.length > 0) {

@@ -37,12 +37,13 @@ export class AstarGrid {
      * @param {number} start_y
      * @param {number} end_x
      * @param {number} end_y
+     * @param {boolean} optimal_result
      * @returns {Int32Array}
      */
-    findPath(start_x, start_y, end_x, end_y) {
+    findPath(start_x, start_y, end_x, end_y, optimal_result) {
         try {
             const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
-            wasm.astargrid_findPath(retptr, this.__wbg_ptr, start_x, start_y, end_x, end_y);
+            wasm.astargrid_findPath(retptr, this.__wbg_ptr, start_x, start_y, end_x, end_y, optimal_result);
             var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
             var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
             var v1 = getArrayI32FromWasm0(r0, r1).slice();

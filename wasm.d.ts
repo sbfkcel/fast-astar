@@ -6,7 +6,7 @@ export class AstarGrid {
     [Symbol.dispose](): void;
     batchFindPaths(requests: Int32Array): Int32Array;
     clearObstacles(): void;
-    findPath(start_x: number, start_y: number, end_x: number, end_y: number): Int32Array;
+    findPath(start_x: number, start_y: number, end_x: number, end_y: number, optimal_result: boolean): Int32Array;
     getHeight(): number;
     getObstacleCount(): number;
     getWidth(): number;
@@ -26,7 +26,7 @@ export interface InitOutput {
     readonly __wbg_astargrid_free: (a: number, b: number) => void;
     readonly astargrid_batchFindPaths: (a: number, b: number, c: number, d: number) => void;
     readonly astargrid_clearObstacles: (a: number) => void;
-    readonly astargrid_findPath: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+    readonly astargrid_findPath: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
     readonly astargrid_getHeight: (a: number) => number;
     readonly astargrid_getObstacleCount: (a: number) => number;
     readonly astargrid_getWidth: (a: number) => number;

@@ -1,15 +1,25 @@
 use wasm_bindgen::prelude::*;
 
+/// Octile heuristic (optimal): 14 * minD + 10 * (maxD - minD)
 #[inline(always)]
-fn heuristic(x1: i32, y1: i32, x2: i32, y2: i32) -> u32 {
+fn heuristic_octile(x1: i32, y1: i32, x2: i32, y2: i32) -> u32 {
     let dx = (x2 - x1).abs() as u32;
     let dy = (y2 - y1).abs() as u32;
     let (min_d, max_d) = if dx < dy { (dx, dy) } else { (dy, dx) };
     if min_d == 0 {
         max_d * 1000
     } else {
-        min_d * 414 + max_d * 1000
+        min_d * 414 + max_d * 1000 // 414 ≈ (14-10)*100, 1000 = 10*100
     }
+}
+
+/// Chebyshev heuristic (fast, non-optimal): maxD * 10
+#[inline(always)]
+fn heuristic_chebyshev(x1: i32, y1: i32, x2: i32, y2: i32) -> u32 {
+    let dx = (x2 - x1).abs() as u32;
+    let dy = (y2 - y1).abs() as u32;
+    let max_d = if dx > dy { dx } else { dy };
+    max_d * 1000 // 1000 = 10*100
 }
 
 /// Lightweight node: linear index + f (for heap, index_map by idx)
@@ -235,7 +245,7 @@ impl AstarGrid {
     }
 
     #[wasm_bindgen(js_name = findPath)]
-    pub fn find_path(&mut self, start_x: i32, start_y: i32, end_x: i32, end_y: i32) -> Vec<i32> {
+    pub fn find_path(&mut self, start_x: i32, start_y: i32, end_x: i32, end_y: i32, optimal_result: bool) -> Vec<i32> {
         if !self.is_walkable(start_x, start_y) || !self.is_walkable(end_x, end_y) {
             return Vec::new();
         }
@@ -256,20 +266,31 @@ impl AstarGrid {
         let end_idx = (end_y * width + end_x) as usize;
 
         self.g_score[start_idx] = 0;
-        let h0 = heuristic(start_x, start_y, end_x, end_y);
+        let h0 = if optimal_result {
+            heuristic_octile(start_x, start_y, end_x, end_y)
+        } else {
+            heuristic_chebyshev(start_x, start_y, end_x, end_y)
+        };
         self.version_map[start_idx] = self.search_version;
         self.in_open_set[start_idx] = 1;
         self.heap.push(Node { idx: start_idx, f: h0 });
 
-        const DIRECTIONS: [(i32, i32, u32); 8] = [
-            (0, -1, 1000),
-            (1, 0, 1000),
-            (0, 1, 1000),
-            (-1, 0, 1000),
-            (1, -1, 1414),
-            (1, 1, 1414),
-            (-1, 1, 1414),
-            (-1, -1, 1414),
+        // Move costs: optimal_result=true uses 10/14, false uses 10/10
+        let (straight_cost, diag_cost) = if optimal_result {
+            (1000, 1414) // 10*100, 14*100 (≈14.14*100)
+        } else {
+            (1000, 1000) // 10*100, 10*100 (uniform cost)
+        };
+        
+        const DIRECTIONS: [(i32, i32); 8] = [
+            (0, -1),
+            (1, 0),
+            (0, 1),
+            (-1, 0),
+            (1, -1),
+            (1, 1),
+            (-1, 1),
+            (-1, -1),
         ];
 
         let sv = self.search_version;
@@ -292,7 +313,7 @@ impl AstarGrid {
 
             let current_g = self.g_score[current_idx];
 
-            for &(dx, dy, cost) in &DIRECTIONS {
+            for &(dx, dy) in &DIRECTIONS {
                 let nx = current_x + dx;
                 let ny = current_y + dy;
                 if nx < 0 || nx >= width || ny < 0 || ny >= self.height {
@@ -308,6 +329,13 @@ impl AstarGrid {
                     continue;
                 }
 
+                // Calculate move cost: diagonal if both dx and dy are non-zero
+                let cost = if dx != 0 && dy != 0 {
+                    diag_cost
+                } else {
+                    straight_cost
+                };
+                
                 let tentative_g = current_g.saturating_add(cost);
                 let existing_g = if self.version_map[neighbor_idx] == sv {
                     self.g_score[neighbor_idx]
@@ -319,7 +347,11 @@ impl AstarGrid {
                     self.came_from[neighbor_idx] = current_idx as u32;
                     self.g_score[neighbor_idx] = tentative_g;
                     self.version_map[neighbor_idx] = sv;
-                    let h = heuristic(nx, ny, end_x, end_y);
+                    let h = if optimal_result {
+                        heuristic_octile(nx, ny, end_x, end_y)
+                    } else {
+                        heuristic_chebyshev(nx, ny, end_x, end_y)
+                    };
                     let f = tentative_g.saturating_add(h);
 
                     if self.in_open_set[neighbor_idx] == 1 {
@@ -360,11 +392,13 @@ impl AstarGrid {
         let mut results = Vec::with_capacity(requests.len() / 2);
         let mut i = 0;
         while i < requests.len() {
+            // batchFindPaths defaults to optimal_result=true for consistency
             let path = self.find_path(
                 requests[i],
                 requests[i + 1],
                 requests[i + 2],
                 requests[i + 3],
+                true, // optimal_result = true
             );
             results.push((path.len() / 2) as i32);
             results.extend(path);

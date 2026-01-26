@@ -6,6 +6,7 @@ This repo is ESM (`"type": "module"`).
 
 ## Features
 
+- **Optimal paths when enabled**: When `optimalResult: true` (default), all implementations (Ultra, Master, WASM) guarantee optimal paths via admissible heuristics (Manhattan/Octile) and proper move costs (10/14) with heap decrease-key updates. When `optimalResult: false`, implementations use faster heuristics (Chebyshev) and uniform costs for speed.
 - **Smart auto-selection** (`strategy: "auto"`) to pick the best implementation for your grid size/device
 - Multiple implementations:
   - **Ultra A\*** (fast JS, heap-based)
@@ -27,7 +28,7 @@ const grid = new Grid({ col: 20, row: 12 });
 grid.setWalkAt(5, 5, false); // obstacle
 
 const astar = new Astar(grid, { strategy: "auto" }); // or prefer: "master"/"ultra"/"wasm"
-const path = await astar.search([0, 0], [19, 11], { rightAngle: false, optimalResult: true });
+const path = await astar.search([0, 0], [19, 11], { rightAngle: false });
 
 console.log(path); // [[x,y], ...] or null
 console.log(astar.getCurrentImplementation()); // { name, gridSize, environment }
@@ -85,7 +86,7 @@ Methods:
 Search options:
 
 - `rightAngle`: `true` to disable diagonals (4-dir only). `false` to allow diagonals (8-dir)
-- `optimalResult`: `true` for optimal path. `false` favors speed and **may return a non-optimal path** depending on the scenario.
+- `optimalResult`: `true` (default) to guarantee optimal paths using admissible heuristics (Manhattan for 4-dir, Octile for 8-dir) and proper move costs (10/14). `false` favors speed using Chebyshev heuristic and uniform costs (10/10), and may return non-optimal paths. **When `optimalResult: true`, all implementations (Ultra, Master, WASM) guarantee optimal paths.**
 
 ## Algorithms (how to select)
 
