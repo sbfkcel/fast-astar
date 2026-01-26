@@ -16,6 +16,10 @@
   "sideEffects": [
     "./snippets/*"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sbfkcel/fast-astar.git"
+  },
   "scripts": {
     "test": "node tests/test.js",
     "test:full": "node --max-old-space-size=8192 tests/test.js",
