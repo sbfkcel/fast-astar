@@ -294,21 +294,27 @@ impl AstarGrid {
             self.closed[current_idx] = true;
 
             if current_idx == end_idx {
-                // 重建路径
-                let mut path = Vec::with_capacity(256);
+                // 重建路径：先收集坐标对，再反转
+                let mut coords: Vec<(i32, i32)> = Vec::with_capacity(128);
                 let mut cur = end_idx;
                 loop {
                     let x = (cur % width_usize) as i32;
                     let y = (cur / width_usize) as i32;
-                    path.push(x);
-                    path.push(y);
+                    coords.push((x, y));
                     let parent = self.came_from[cur];
                     if parent == u32::MAX || parent as usize == cur {
                         break;
                     }
                     cur = parent as usize;
                 }
-                path.reverse();
+                coords.reverse();
+                
+                // 展开为 [x0, y0, x1, y1, ...]
+                let mut path = Vec::with_capacity(coords.len() * 2);
+                for (x, y) in coords {
+                    path.push(x);
+                    path.push(y);
+                }
                 return path;
             }
 
@@ -370,6 +376,7 @@ impl AstarGrid {
         }
         results
     }
+
 }
 
 #[wasm_bindgen(js_name = getVersion)]
