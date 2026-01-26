@@ -83,8 +83,7 @@ async function runOne(grid, implName, start, end) {
 }
 
 function getImplementations(size) {
-    const list = ['智能选择', 'Ultra A*', 'Master A*'];
-    if (size >= 500 && size <= 5000) list.push('WebAssembly A*');
+    const list = ['智能选择', 'Ultra A*', 'Master A*', 'WebAssembly A*'];
     if (size >= 10000) list.push('MemoryEfficient A*');
     return list;
 }
