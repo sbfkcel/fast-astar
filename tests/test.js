@@ -1,14 +1,15 @@
-// 🧪 A* 算法性能对比（100～100万，每种 size 一表）
+// 🧪 A* 算法性能对比（100～100亿，每种 size 一表）
 
 import Grid from '../Grid.js';
 import Astar from '../Astar.js';
 import { getPerformanceNow } from '../utils.js';
 
-const OBSTACLE_DENSITY = 0.2;
+const BASE_OBSTACLE_DENSITY = 0.2;
 const TEST_ROUNDS = 3;
 
-// 100～100万。默认 100～1万；50k/10万 需 TEST_SIZES=100,500,...,100000 且更大堆
-const DEFAULT_SIZES = [100, 500, 1000, 5000, 10000];
+// 100～10万。默认测试到10万
+// 注意：100000×100000 = 100亿节点，需要大量内存
+const DEFAULT_SIZES = [100, 500, 1000, 5000, 10000, 50000, 100000];
 const TEST_SIZES = typeof process !== 'undefined' && process.env.TEST_SIZES
     ? process.env.TEST_SIZES.split(',').map(Number).filter(Boolean)
     : DEFAULT_SIZES;
@@ -18,11 +19,33 @@ function seededRandom(seed) {
     return () => { v = (v * 9301 + 49297) % 233280; return v / 233280; };
 }
 
+// 根据地图大小动态调整障碍物密度和数量
+function getObstacleDensity(size) {
+    const totalCells = size * size;
+    if (totalCells > 1_000_000_000) {
+        // 超过 10 亿节点：极低密度，最多 100 万障碍物
+        return Math.min(BASE_OBSTACLE_DENSITY, 1_000_000 / totalCells);
+    } else if (totalCells > 100_000_000) {
+        // 超过 1 亿节点：低密度，最多 500 万障碍物
+        return Math.min(BASE_OBSTACLE_DENSITY, 5_000_000 / totalCells);
+    } else if (totalCells > 10_000_000) {
+        // 超过 1000 万节点：中等密度，最多 200 万障碍物
+        return Math.min(BASE_OBSTACLE_DENSITY, 2_000_000 / totalCells);
+    }
+    return BASE_OBSTACLE_DENSITY;
+}
+
 function generateFixedObstacles(size, density) {
     const random = seededRandom(size * 1000 + Math.floor(density * 100));
-    const n = Math.floor(size * size * density);
+    const actualDensity = typeof density === 'number' ? density : getObstacleDensity(size);
+    const n = Math.floor(size * size * actualDensity);
+    
+    // 限制最大障碍物数量以避免内存问题
+    const maxObstacles = 10_000_000; // 最多 1000 万个障碍物
+    const actualCount = Math.min(n, maxObstacles);
+    
     const out = [];
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < actualCount; i++) {
         out.push([Math.floor(random() * size), Math.floor(random() * size)]);
     }
     return out;
@@ -148,9 +171,14 @@ async function main() {
     const obstaclesBySize = new Map();
     for (const size of TEST_SIZES) {
         try {
-            obstaclesBySize.set(size, generateFixedObstacles(size, OBSTACLE_DENSITY));
+            const density = getObstacleDensity(size);
+            const obstacles = generateFixedObstacles(size, density);
+            obstaclesBySize.set(size, obstacles);
+            if (size >= 50000) {
+                console.log(`📊 ${size}×${size}: 生成 ${obstacles.length.toLocaleString()} 个障碍物 (密度: ${(density * 100).toFixed(4)}%)`);
+            }
         } catch (e) {
-            console.warn(`⚠️ ${size}×${size} 生成障碍物失败，跳过`);
+            console.warn(`⚠️ ${size}×${size} 生成障碍物失败: ${e.message}`);
         }
     }
 

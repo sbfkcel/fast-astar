@@ -2,6 +2,9 @@
 name = "astar-wasm"
 version = "0.1.0"
 edition = "2021"
+description = "High-performance A* pathfinding algorithm with WebAssembly support"
+repository = "https://github.com/sbfkcel/fast-astar"
+license = "MIT"
 
 [lib]
 crate-type = ["cdylib"]

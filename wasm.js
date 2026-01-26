@@ -119,6 +119,90 @@ export class AstarGrid {
     }
 }
 if (Symbol.dispose) AstarGrid.prototype[Symbol.dispose] = AstarGrid.prototype.free;
+export class AstarGridSparse {
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        AstarGridSparseFinalization.unregister(this);
+        return ptr;
+    }
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_astargridsparse_free(ptr, 0);
+    }
+    clearObstacles() {
+        wasm.astargridsparse_clearObstacles(this.__wbg_ptr);
+    }
+    /**
+     * @param {bigint} start_x
+     * @param {bigint} start_y
+     * @param {bigint} end_x
+     * @param {bigint} end_y
+     * @param {boolean} optimal_result
+     * @returns {Int32Array}
+     */
+    findPath(start_x, start_y, end_x, end_y, optimal_result) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.astargridsparse_findPath(retptr, this.__wbg_ptr, start_x, start_y, end_x, end_y, optimal_result);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            var v1 = getArrayI32FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_export2(r0, r1 * 4, 4);
+            return v1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+     * @returns {bigint}
+     */
+    getHeight() {
+        const ret = wasm.astargridsparse_getHeight(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @returns {number}
+     */
+    getObstacleCount() {
+        const ret = wasm.astargridsparse_getObstacleCount(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @returns {bigint}
+     */
+    getWidth() {
+        const ret = wasm.astargridsparse_getWidth(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @param {bigint} width
+     * @param {bigint} height
+     */
+    constructor(width, height) {
+        const ret = wasm.astargridsparse_new(width, height);
+        this.__wbg_ptr = ret >>> 0;
+        AstarGridSparseFinalization.register(this, this.__wbg_ptr, this);
+        return this;
+    }
+    /**
+     * @param {bigint} x
+     * @param {bigint} y
+     * @param {boolean} is_obstacle
+     */
+    setObstacle(x, y, is_obstacle) {
+        wasm.astargridsparse_setObstacle(this.__wbg_ptr, x, y, is_obstacle);
+    }
+    /**
+     * @param {Int32Array} coords
+     */
+    setObstaclesFromCoords(coords) {
+        const ptr0 = passArray32ToWasm0(coords, wasm.__wbindgen_export);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.astargridsparse_setObstaclesFromCoords(this.__wbg_ptr, ptr0, len0);
+    }
+}
+if (Symbol.dispose) AstarGridSparse.prototype[Symbol.dispose] = AstarGridSparse.prototype.free;
 /**
  * @returns {string}
  */
@@ -138,6 +222,15 @@ export function getVersion() {
         wasm.__wbindgen_export2(deferred1_0, deferred1_1, 1);
     }
 }
+/**
+ * @param {bigint} width
+ * @param {bigint} height
+ * @returns {number}
+ */
+export function recommendedImpl(width, height) {
+    const ret = wasm.recommendedImpl(width, height);
+    return ret;
+}
 function __wbg_get_imports() {
     const import0 = {
         __proto__: null,
@@ -153,6 +246,9 @@ function __wbg_get_imports() {
 const AstarGridFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_astargrid_free(ptr >>> 0, 1));
+const AstarGridSparseFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_astargridsparse_free(ptr >>> 0, 1));
 function getArrayI32FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return getInt32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
