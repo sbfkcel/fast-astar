@@ -9,18 +9,23 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
         constructor(scoreFunction = (node) => node.f) {
             this.content = [];
             this.scoreFunction = scoreFunction;
+            // element -> index (for decrease-key / update)
+            this.indexMap = new Map();
         }
 
         push(element) {
             this.content.push(element);
+            this.indexMap.set(element, this.content.length - 1);
             this.sinkDown(this.content.length - 1);
         }
 
         pop() {
             const result = this.content[0];
             const end = this.content.pop();
+            this.indexMap.delete(result);
             if (this.content.length > 0) {
                 this.content[0] = end;
+                this.indexMap.set(end, 0);
                 this.bubbleUp(0);
             }
             return result;
@@ -45,6 +50,8 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                 
                 this.content[parentN] = element;
                 this.content[n] = parent;
+                this.indexMap.set(element, parentN);
+                this.indexMap.set(parent, n);
                 n = parentN;
             }
         }
@@ -76,11 +83,21 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                 if (swap !== null) {
                     this.content[n] = this.content[swap];
                     this.content[swap] = element;
+                    this.indexMap.set(this.content[n], n);
+                    this.indexMap.set(element, swap);
                     n = swap;
                 } else {
                     break;
                 }
             }
+        }
+
+        // Re-heapify after element score changed
+        update(element) {
+            const pos = this.indexMap.get(element);
+            if (pos === undefined) return;
+            this.sinkDown(pos);
+            this.bubbleUp(pos);
         }
     }
 
@@ -170,7 +187,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             }
             
             startNode.g = 0;
-            startNode.h = this.manhattanDistance(startX, startY, endX, endY);
+            startNode.h = this.heuristicDistance(startX, startY, endX, endY, rightAngle, optimalResult);
             startNode.f = startNode.h;
             startNode.parent = null;
             
@@ -225,7 +242,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                     if (!this.openSet.has(neighborKey)) {
                         neighbor.parent = [current.x, current.y];
                         neighbor.g = tentativeG;
-                        neighbor.h = this.manhattanDistance(neighbor.x, neighbor.y, endX, endY);
+                        neighbor.h = this.heuristicDistance(neighbor.x, neighbor.y, endX, endY, rightAngle, optimalResult);
                         neighbor.f = neighbor.g + neighbor.h;
                         
                         // 仅用于演示：将分数同步回节点对象（只在提供 render 时启用）
@@ -247,6 +264,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                     } else if (tentativeG < neighbor.g) {
                         neighbor.parent = [current.x, current.y];
                         neighbor.g = tentativeG;
+                        // h stays valid for same end; f must be updated
                         neighbor.f = neighbor.g + neighbor.h;
                         
                         // 仅用于演示：将分数同步回节点对象（只在提供 render 时启用）
@@ -261,7 +279,8 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                         if (hasRender && this.grid.set) {
                             this.grid.set([neighbor.x, neighbor.y], 'type', 'update');
                         }
-                        // 需要重新调整堆，但BinaryHeap没有update方法，这里先简化处理
+                        // decrease-key: re-heapify (required for optimality)
+                        this.openHeap.update(neighbor);
                     }
                 }
             }
@@ -301,8 +320,14 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             return (dx === 0 || dy === 0) ? 10 : 14;
         }
         
-        manhattanDistance(x1, y1, x2, y2) {
-            return (Math.abs(x1 - x2) + Math.abs(y1 - y2)) * 10;
+        heuristicDistance(x1, y1, x2, y2, rightAngle, optimalResult) {
+            const dx = Math.abs(x1 - x2);
+            const dy = Math.abs(y1 - y2);
+            if (rightAngle) return (dx + dy) * 10; // Manhattan (4-dir)
+            const maxD = Math.max(dx, dy);
+            const minD = dx + dy - maxD;
+            if (!optimalResult) return maxD * 10; // Chebyshev (diag cost==10 in this mode)
+            return 14 * minD + 10 * (maxD - minD); // Octile (8-dir, 10/14)
         }
         
         reconstructPath(endNode) {
@@ -325,7 +350,8 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
         }
         
         h(start, end) {
-            return this.manhattanDistance(start[0], start[1], end[0], end[1]);
+            // best-effort: assume optimalResult=true when used as heuristic API
+            return this.heuristicDistance(start[0], start[1], end[0], end[1], false, true);
         }
         
         // 内存使用统计
@@ -432,7 +458,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             
             // 初始化起点
             this.gScore.set(startIndex, 0);
-            const h = this.manhattanDistance(start[0], start[1], end[0], end[1]);
+            const h = this.heuristicDistance(start[0], start[1], end[0], end[1], rightAngle, optimalResult);
             this.fScore.set(startIndex, h); // f = g + h = 0 + h
             openHeap.push(startIndex);
             
@@ -478,16 +504,15 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                         this.parent.set(neighborIndex, currentIndex);
                         this.gScore.set(neighborIndex, tentativeG);
                         
-                        const h = this.manhattanDistance(neighborX, neighborY, end[0], end[1]);
+                        const h = this.heuristicDistance(neighborX, neighborY, end[0], end[1], rightAngle, optimalResult);
                         const f = tentativeG + h;
                         this.fScore.set(neighborIndex, f);
                         
-                        // 如果节点不在堆中，添加它；否则更新堆位置
-                        if (!this.closedSet.has(neighborIndex) && 
-                            (this.fScore.get(neighborIndex) === f || existingG === undefined)) {
-                            openHeap.push(neighborIndex);
-                        } else {
+                        // 如果节点已在堆中则更新，否则 push
+                        if (openHeap.indexMap && openHeap.indexMap.has(neighborIndex)) {
                             openHeap.update(neighborIndex);
+                        } else {
+                            openHeap.push(neighborIndex);
                         }
                     }
                 }
@@ -509,8 +534,14 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             return path.reverse();
         }
         
-        manhattanDistance(x1, y1, x2, y2) {
-            return (Math.abs(x1 - x2) + Math.abs(y1 - y2)) * 10;
+        heuristicDistance(x1, y1, x2, y2, rightAngle, optimalResult) {
+            const dx = Math.abs(x1 - x2);
+            const dy = Math.abs(y1 - y2);
+            if (rightAngle) return (dx + dy) * 10;
+            const maxD = Math.max(dx, dy);
+            const minD = dx + dy - maxD;
+            if (!optimalResult) return maxD * 10;
+            return 14 * minD + 10 * (maxD - minD);
         }
         
         // 兼容性方法
@@ -520,7 +551,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
         }
         
         h(start, end) {
-            return this.manhattanDistance(start[0], start[1], end[0], end[1]);
+            return this.heuristicDistance(start[0], start[1], end[0], end[1], false, true);
         }
         
         // 内存使用统计
@@ -724,7 +755,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             const endIndex = end[1] * this.width + end[0];
             
             this.gScore[startIndex] = 0;
-            this.fScore[startIndex] = this.manhattanDistance(start[0], start[1], end[0], end[1]);
+            this.fScore[startIndex] = this.heuristicDistance(start[0], start[1], end[0], end[1], rightAngle, optimalResult);
             
             // 触发 render 回调：起点加入开放列表
             if (hasRender && this.grid.set) {
@@ -822,7 +853,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
                         this.parent[neighborIndex] = currentIndex;
                         this.gScore[neighborIndex] = tentativeG;
                         this.fScore[neighborIndex] = tentativeG + 
-                            this.manhattanDistance(neighborX, neighborY, end[0], end[1]);
+                            this.heuristicDistance(neighborX, neighborY, end[0], end[1], rightAngle, optimalResult);
                         
                         // 添加到开放列表（如果不存在）
                         if (!this.inOpenList[neighborIndex]) {
@@ -885,8 +916,14 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
             return path.reverse();
         }
         
-        manhattanDistance(x1, y1, x2, y2) {
-            return (Math.abs(x1 - x2) + Math.abs(y1 - y2)) * 10;
+        heuristicDistance(x1, y1, x2, y2, rightAngle, optimalResult) {
+            const dx = Math.abs(x1 - x2);
+            const dy = Math.abs(y1 - y2);
+            if (rightAngle) return (dx + dy) * 10;
+            const maxD = Math.max(dx, dy);
+            const minD = dx + dy - maxD;
+            if (!optimalResult) return maxD * 10;
+            return 14 * minD + 10 * (maxD - minD);
         }
         
         // 兼容性方法
@@ -900,7 +937,7 @@ import { isNode, isBrowser, getPerformanceNow } from './utils.js';
         }
         
         h(start, end) {
-            return this.manhattanDistance(start[0], start[1], end[0], end[1]);
+            return this.heuristicDistance(start[0], start[1], end[0], end[1], false, true);
         }
         
         // 获取内存使用情况

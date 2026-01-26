@@ -85,7 +85,7 @@ Methods:
 Search options:
 
 - `rightAngle`: `true` to disable diagonals (4-dir only). `false` to allow diagonals (8-dir)
-- `optimalResult`: `true` for best path, `false` for faster approximate behavior (implementation-dependent)
+- `optimalResult`: `true` for optimal path. `false` favors speed and **may return a non-optimal path** depending on the scenario.
 
 ## Algorithms (how to select)
 

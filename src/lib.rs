@@ -12,55 +12,43 @@ fn heuristic(x1: i32, y1: i32, x2: i32, y2: i32) -> u32 {
     }
 }
 
-// 超轻量级节点 - 仅存 pos + f，16 字节
+/// Lightweight node: linear index + f (for heap, index_map by idx)
 #[derive(Clone, Copy)]
 struct Node {
-    pos: u32, // (y << 16) | x
+    idx: usize,
     f: u32,
 }
 
-impl Node {
-    #[inline(always)]
-    fn new(x: i32, y: i32, f: u32) -> Self {
-        Node {
-            pos: ((y as u32) << 16) | (x as u32),
-            f,
-        }
-    }
-
-    #[inline(always)]
-    fn x(&self) -> i32 {
-        (self.pos & 0xFFFF) as i32
-    }
-
-    #[inline(always)]
-    fn y(&self) -> i32 {
-        (self.pos >> 16) as i32
-    }
-}
-
-/// 最小堆，支持复用与按需扩容
+/// Min-heap with index_map for decrease-key (optimal A*)
 struct MinHeap {
     data: Vec<Node>,
+    /// idx -> position in data; usize::MAX if not in heap
+    index_map: Vec<usize>,
 }
 
 impl MinHeap {
     #[inline(always)]
-    fn new() -> Self {
+    fn new(grid_size: usize) -> Self {
         MinHeap {
-            data: Vec::with_capacity(2048),
+            data: Vec::with_capacity(2048.min(grid_size)),
+            index_map: vec![usize::MAX; grid_size],
         }
     }
 
     #[inline(always)]
     fn clear(&mut self) {
+        for n in &self.data {
+            self.index_map[n.idx] = usize::MAX;
+        }
         self.data.clear();
     }
 
     #[inline(always)]
     fn push(&mut self, node: Node) {
+        let i = self.data.len();
         self.data.push(node);
-        self.sift_up(self.data.len() - 1);
+        self.index_map[node.idx] = i;
+        self.sift_up(i);
     }
 
     #[inline(always)]
@@ -69,12 +57,26 @@ impl MinHeap {
             return None;
         }
         let result = self.data[0];
+        self.index_map[result.idx] = usize::MAX;
         let last = self.data.pop().unwrap();
         if !self.data.is_empty() {
             self.data[0] = last;
+            self.index_map[last.idx] = 0;
             self.sift_down(0);
         }
         Some(result)
+    }
+
+    /// Decrease-key: update f for cell already in heap, then re-heapify (required for optimality)
+    #[inline(always)]
+    fn update(&mut self, idx: usize, new_f: u32) {
+        let i = self.index_map[idx];
+        if i == usize::MAX {
+            return;
+        }
+        self.data[i].f = new_f;
+        self.sift_up(i);
+        self.sift_down(i);
     }
 
     #[inline(always)]
@@ -87,9 +89,11 @@ impl MinHeap {
                 break;
             }
             self.data[idx] = parent;
+            self.index_map[parent.idx] = idx;
             idx = parent_idx;
         }
         self.data[idx] = node;
+        self.index_map[node.idx] = idx;
     }
 
     #[inline(always)]
@@ -107,9 +111,11 @@ impl MinHeap {
                 break;
             }
             self.data[idx] = self.data[small];
+            self.index_map[self.data[small].idx] = idx;
             idx = small;
         }
         self.data[idx] = node;
+        self.index_map[node.idx] = idx;
     }
 }
 
@@ -151,7 +157,7 @@ impl AstarGrid {
             in_closed_set: vec![0; grid_size],
             search_version: 0,
             version_map: vec![0; grid_size],
-            heap: MinHeap::new(),
+            heap: MinHeap::new(grid_size),
         }
     }
 
@@ -248,13 +254,12 @@ impl AstarGrid {
         let width_usize = self.width_usize;
         let start_idx = (start_y * width + start_x) as usize;
         let end_idx = (end_y * width + end_x) as usize;
-        let max_distance = ((dx + dy) as u32) * 3000;
 
         self.g_score[start_idx] = 0;
         let h0 = heuristic(start_x, start_y, end_x, end_y);
         self.version_map[start_idx] = self.search_version;
         self.in_open_set[start_idx] = 1;
-        self.heap.push(Node::new(start_x, start_y, h0));
+        self.heap.push(Node { idx: start_idx, f: h0 });
 
         const DIRECTIONS: [(i32, i32, u32); 8] = [
             (0, -1, 1000),
@@ -270,9 +275,9 @@ impl AstarGrid {
         let sv = self.search_version;
 
         while let Some(current) = self.heap.pop() {
-            let current_x = current.x();
-            let current_y = current.y();
-            let current_idx = current_y as usize * width_usize + current_x as usize;
+            let current_idx = current.idx;
+            let current_x = (current_idx % width_usize) as i32;
+            let current_y = (current_idx / width_usize) as i32;
 
             if self.version_map[current_idx] != sv || self.in_closed_set[current_idx] == 1 {
                 continue;
@@ -286,9 +291,6 @@ impl AstarGrid {
             }
 
             let current_g = self.g_score[current_idx];
-            if current_g > max_distance {
-                continue;
-            }
 
             for &(dx, dy, cost) in &DIRECTIONS {
                 let nx = current_x + dx;
@@ -320,10 +322,12 @@ impl AstarGrid {
                     let h = heuristic(nx, ny, end_x, end_y);
                     let f = tentative_g.saturating_add(h);
 
-                    if self.in_open_set[neighbor_idx] == 0 {
+                    if self.in_open_set[neighbor_idx] == 1 {
+                        self.heap.update(neighbor_idx, f);
+                    } else {
                         self.in_open_set[neighbor_idx] = 1;
+                        self.heap.push(Node { idx: neighbor_idx, f });
                     }
-                    self.heap.push(Node::new(nx, ny, f));
                 }
             }
         }
