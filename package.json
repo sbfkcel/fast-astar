@@ -1,7 +1,7 @@
 {
   "name": "fast-astar",
   "type": "module",
-  "version": "2.0.0",
+  "version": "2.0.2",
   "description": "fast-astar is an implementation of a* algorithm using javascript. Small and fast.",
   "files": [
     "astar.wasm",
@@ -9,7 +9,8 @@
     "wasm.d.ts",
     "index.js",
     "Grid.js",
-    "Astar.js"
+    "Astar.js",
+    "utils.js"
   ],
   "main": "index.js",
   "types": "wasm.d.ts",
